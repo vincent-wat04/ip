@@ -17,6 +17,7 @@ public class Vince {
     public static void main(String[] args) {
         greet();
         Scanner scanner = new Scanner(System.in);
+        ToDoList toDoList = new ToDoList();
         while (true) {
             String input = scanner.nextLine();
             
@@ -25,9 +26,13 @@ public class Vince {
                     exit();
                     scanner.close();
                     return;
+                case "list":
+                    toDoList.listTasks();
+                    break;
                 default:
+                    toDoList.addTask(input);
                     System.out.println("____________________________________________________________");
-                    System.out.println(input);
+                    System.out.println("added: " + input);
                     System.out.println("____________________________________________________________\n");
                     break;
             }
