@@ -20,14 +20,30 @@ public class Vince {
         ToDoList toDoList = new ToDoList();
         while (true) {
             String input = scanner.nextLine();
+            String[] parts = input.split(" ");
+            String command = parts[0];
             
-            switch (input) {
+            switch (command) {
                 case "bye":
                     exit();
                     scanner.close();
                     return;
                 case "list":
                     toDoList.listTasks();
+                    break;
+                case "mark":
+                    toDoList.markTask(parts[1]);
+                    System.out.println("____________________________________________________________");
+                    System.out.println("Nice! I've marked this task as done: " );
+                    System.out.println(toDoList.getTask(parts[1]));
+                    System.out.println("____________________________________________________________\n");
+                    break;
+                case "unmark":
+                    toDoList.unmarkTask(parts[1]);
+                    System.out.println("____________________________________________________________");
+                    System.out.println("OK, I've marked this task as not done yet: ");
+                    System.out.println(toDoList.getTask(parts[1]));
+                    System.out.println("____________________________________________________________\n");
                     break;
                 default:
                     toDoList.addTask(input);
