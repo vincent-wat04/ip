@@ -54,12 +54,19 @@ public class Vince {
                         System.out.println(toDoList.getTask(parts[1]));
                         System.out.println("____________________________________________________________\n");
                         break;
+                    case "delete":
+                        Task deletedTask = toDoList.deleteTask(parts[1]);
+                        System.out.println("____________________________________________________________");
+                        System.out.println("Noted. I've removed this task:\n" + deletedTask);
+                        System.out.println("Now you have " + toDoList.getTaskCount() + " tasks in the list.");
+                        System.out.println("____________________________________________________________\n");
+                        break;
                     case "todo":
                     case "deadline":
                     case "event":   
-                        Task task = toDoList.addTask(input);
+                        Task addedtask = toDoList.addTask(input);
                         System.out.println("____________________________________________________________");
-                        System.out.println("Got it. I've added this task:\n" + task);
+                        System.out.println("Got it. I've added this task:\n" + addedtask);
                         System.out.println("Now you have " + toDoList.getTaskCount() + " tasks in the list.");
                         System.out.println("____________________________________________________________\n");
                         break;
