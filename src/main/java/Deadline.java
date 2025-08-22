@@ -1,9 +1,12 @@
 public class Deadline extends Task {
     private String by;
 
-    public Deadline(String description, String by) {
+    public Deadline(String description, String by) throws VinceException {
         super(description);
-        this.by = by;
+        if (by == null || by.trim().isEmpty()) {
+            throw new VinceException("Deadline date cannot be null or empty!");
+        }
+        this.by = by.trim();
     }
 
     @Override
