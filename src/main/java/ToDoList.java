@@ -5,29 +5,34 @@ public class ToDoList {
     
     public Task addTask(String task) throws VinceException {
         String type = task.split(" ")[0];
-        switch (type) {
-            case "deadline":
+        
+        TaskType taskType = TaskType.fromCommand(type);
+        if (taskType == null) {
+            tasks.add(new Task(task));
+            return tasks.get(tasks.size() - 1);
+        }
+        
+        switch (taskType) {
+            case DEADLINE:
                 if (!task.contains(" /by ")) {
-                    throw new VinceException("Deadlisne task must contain ' /by ' to specify the deadline!");
+                    throw new VinceException("Deadline task must contain ' /by ' to specify the deadline!");
                 }
                 String[] deadlineParts = task.split(" /by ");
-                tasks.add(new Deadline(deadlineParts[0].substring(9), deadlineParts[1]));
+                tasks.add(new Deadline(deadlineParts[0].substring(taskType.getPrefixLength()), deadlineParts[1]));
                 break;
-            case "event":
+            case EVENT:
                 if (!task.contains(" /from ") || !task.contains(" /to ")) {
                     throw new VinceException("Event task must contain ' /from ' and ' /to ' to specify the event time!");
                 }
                 String[] eventParts = task.split(" /from | /to ");
-                tasks.add(new Event(eventParts[0].substring(6), eventParts[1], eventParts[2]));
+                tasks.add(new Event(eventParts[0].substring(taskType.getPrefixLength()), eventParts[1], eventParts[2]));
                 break;
-            case "todo":    
-                if (task.length() < 5) {
-                    throw new VinceException("ToDo task must start with 'todo ' and have a description!");
+            case TODO:    
+                if (task.length() < taskType.getPrefixLength()) {
+                    throw new VinceException("Todo task must start with 'todo ' and have a description!");
                 }
-                tasks.add(new Todo(task.substring(5)));
+                tasks.add(new Todo(task.substring(taskType.getPrefixLength())));
                 break;
-            default:
-                tasks.add(new Task(task));
         }
         return tasks.get(tasks.size() - 1);
     }

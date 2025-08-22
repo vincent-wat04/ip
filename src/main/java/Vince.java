@@ -29,51 +29,53 @@ public class Vince {
             }
 
             String[] parts = input.split(" ");
-            String command = parts[0];
+            String commandString = parts[0];
             
             try {
+                if (Command.fromString(commandString) == null) {
+                    System.out.println("____________________________________________________________");
+                    System.out.println("Oops! It's an invalid command :-(");
+                    System.out.println("____________________________________________________________\n");
+                    continue;
+                }
+                
+                Command command = Command.fromString(commandString);
                 switch (command) {
-                    case "bye":
+                    case BYE:
                         exit();
                         scanner.close();
                         return;
-                    case "list":
+                    case LIST:
                         toDoList.listTasks();
                         break;
-                    case "mark":
+                    case MARK:
                         toDoList.markTask(parts[1]);
                         System.out.println("____________________________________________________________");
                         System.out.println("Nice! I've marked this task as done: " );
                         System.out.println(toDoList.getTask(parts[1]));
                         System.out.println("____________________________________________________________\n");
                         break;
-                    case "unmark":
+                    case UNMARK:
                         toDoList.unmarkTask(parts[1]);
                         System.out.println("____________________________________________________________");
                         System.out.println("OK, I've marked this task as not done yet: ");
                         System.out.println(toDoList.getTask(parts[1]));
                         System.out.println("____________________________________________________________\n");
                         break;
-                    case "delete":
+                    case DELETE:
                         Task deletedTask = toDoList.deleteTask(parts[1]);
                         System.out.println("____________________________________________________________");
                         System.out.println("Noted. I've removed this task:\n" + deletedTask);
                         System.out.println("Now you have " + toDoList.getTaskCount() + " tasks in the list.");
                         System.out.println("____________________________________________________________\n");
                         break;
-                    case "todo":
-                    case "deadline":
-                    case "event":   
+                    case TODO:
+                    case DEADLINE:
+                    case EVENT:   
                         Task addedtask = toDoList.addTask(input);
                         System.out.println("____________________________________________________________");
                         System.out.println("Got it. I've added this task:\n" + addedtask);
                         System.out.println("Now you have " + toDoList.getTaskCount() + " tasks in the list.");
-                        System.out.println("____________________________________________________________\n");
-                        break;
-    
-                    default:
-                        System.out.println("____________________________________________________________");
-                        System.out.println("Oops! It's an invalid command :-(");
                         System.out.println("____________________________________________________________\n");
                         break;
                 }
