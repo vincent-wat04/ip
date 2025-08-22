@@ -46,9 +46,10 @@ public class Vince {
                     System.out.println("____________________________________________________________\n");
                     break;
                 default:
-                    toDoList.addTask(input);
+                    Task task = toDoList.addTask(input);
                     System.out.println("____________________________________________________________");
-                    System.out.println("added: " + input);
+                    System.out.println("Got it. I've added this task:\n" + task);
+                    System.out.println("Now you have " + toDoList.getTaskCount() + " tasks in the list.");
                     System.out.println("____________________________________________________________\n");
                     break;
             }

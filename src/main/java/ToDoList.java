@@ -2,9 +2,30 @@ public class ToDoList {
     private int taskCount = 0;
     private Task[] tasks = new Task[100];
     
-    public void addTask(String task) {
-        tasks[taskCount] = new Task(task);
+    public Task addTask(String task) {
+        String type = task.split(" ")[0];
+        switch (type) {
+            case "deadline":
+                String[] deadlineParts = task.split(" /by ");
+                tasks[taskCount] = new Deadline(deadlineParts[0].substring(9), deadlineParts[1]);
+                break;
+            case "event":
+                String[] eventParts = task.split(" /from | /to ");
+                tasks[taskCount] = new Event(eventParts[0].substring(6), eventParts[1], eventParts[2]);
+                break;
+            case "todo":
+                tasks[taskCount] = new Todo(task.substring(5));
+                break;
+            default:
+                tasks[taskCount] = new Task(task);
+        }
+
         taskCount++;
+        return tasks[taskCount - 1];
+    }
+
+    public int getTaskCount() {
+        return taskCount;
     }
     
     public void listTasks() {
