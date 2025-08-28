@@ -14,7 +14,7 @@ public class Storage {
             base = Paths.get("..");
         }
         Path dataDir = base.resolve(Paths.get("data"));
-        return dataDir.resolve("duke.txt");
+        return dataDir.resolve("vince.txt");
     }
 
     public static ArrayList<Task> load() {
