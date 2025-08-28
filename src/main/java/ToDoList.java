@@ -3,12 +3,17 @@ import java.util.ArrayList;
 public class ToDoList {
     private ArrayList<Task> tasks = new ArrayList<Task>();
     
+    public ToDoList() {
+        this.tasks = Storage.load();
+    }
+    
     public Task addTask(String task) throws VinceException {
         String type = task.split(" ")[0];
         
         TaskType taskType = TaskType.fromCommand(type);
         if (taskType == null) {
             tasks.add(new Task(task));
+            Storage.save(tasks);
             return tasks.get(tasks.size() - 1);
         }
         
@@ -34,6 +39,7 @@ public class ToDoList {
                 tasks.add(new Todo(task.substring(taskType.getPrefixLength())));
                 break;
         }
+        Storage.save(tasks);
         return tasks.get(tasks.size() - 1);
     }
 
@@ -64,6 +70,7 @@ public class ToDoList {
             throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         tasks.get(taskIndex).mark();
+        Storage.save(tasks);
     }
 
     public void unmarkTask(String index) {
@@ -72,6 +79,7 @@ public class ToDoList {
             throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         tasks.get(taskIndex).unmark();
+        Storage.save(tasks);
     }
 
     public Task deleteTask(String index) {
@@ -79,7 +87,9 @@ public class ToDoList {
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
             throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
-        return tasks.remove(taskIndex);
+        Task removed = tasks.remove(taskIndex);
+        Storage.save(tasks);
+        return removed;
     }
 }
 
