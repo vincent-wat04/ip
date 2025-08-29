@@ -1,9 +1,13 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ToDoList {
     private ArrayList<Task> tasks = new ArrayList<Task>();
+    private Ui ui;
     
-    public ToDoList() {
+    public ToDoList(Ui ui) {
+        this.ui = ui;
         this.tasks = Storage.load();
     }
     
@@ -48,12 +52,51 @@ public class ToDoList {
     }
     
     public void listTasks() {
-        System.out.println("____________________________________________________________");
+        ui.showLine();
         System.out.println("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println((i + 1) + ". " + tasks.get(i));
         }
-        System.out.println("____________________________________________________________\n");
+        ui.showLine();
+        System.out.println();
+    }
+
+    public void showTasksOnDate(String dateStr) throws VinceException {
+        LocalDate targetDate = DateTimeParser.parseDateTime(dateStr).toLocalDate();
+        
+        ui.showLine();
+        System.out.println("Tasks on " + DateTimeParser.formatDate(targetDate.atStartOfDay()) + ":");
+        
+        boolean found = false;
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            LocalDateTime taskDate = null;
+            
+            if (task instanceof Deadline) {
+                taskDate = ((Deadline) task).getBy();
+            } else if (task instanceof Event) {
+                Event event = (Event) task;
+                // Check if the event spans the target date
+                LocalDate eventStartDate = event.getFrom().toLocalDate();
+                LocalDate eventEndDate = event.getTo().toLocalDate();
+                if (!targetDate.isBefore(eventStartDate) && !targetDate.isAfter(eventEndDate)) {
+                    System.out.println((i + 1) + ". " + task);
+                    found = true;
+                }
+                continue;
+            }
+            
+            if (taskDate != null && taskDate.toLocalDate().equals(targetDate)) {
+                System.out.println((i + 1) + ". " + task);
+                found = true;
+            }
+        }
+        
+        if (!found) {
+            System.out.println("No tasks found on this date.");
+        }
+        ui.showLine();
+        System.out.println();
     }
 
     public Task getTask(String index) {
