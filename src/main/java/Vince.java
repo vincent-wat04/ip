@@ -1,30 +1,22 @@
 import java.util.Scanner;
 
 public class Vince {
-    public static void greet() {
-        System.out.println("____________________________________________________________");
-        System.out.println("Hello I'm Vince\n" +
-                "What can I do for you?\n");
-        System.out.println("____________________________________________________________\n");
+    private Ui ui;
+    private ToDoList toDoList;
+    
+    public Vince() {
+        this.ui = new Ui();
+        this.toDoList = new ToDoList(ui);
     }
     
-    public static void exit() {
-        System.out.println("____________________________________________________________");
-        System.out.println("Bye. Hope to see you again soon!\n");
-        System.out.println("____________________________________________________________\n");
-    }
-    
-    public static void main(String[] args) {
-        greet();
-        Scanner scanner = new Scanner(System.in);
-        ToDoList toDoList = new ToDoList();
+    public void run() {
+        ui.showWelcome();
+        
         while (true) {
-            String input = scanner.nextLine();
+            String input = ui.readCommand();
 
             if (input == null || input.trim().isEmpty()) {
-                System.out.println("____________________________________________________________");
-                System.out.println("Oops! The command cannot be empty!");
-                System.out.println("____________________________________________________________\n");
+                ui.showEmptyCommandError();
                 continue;
             }
 
@@ -33,57 +25,53 @@ public class Vince {
             
             try {
                 if (Command.fromString(commandString) == null) {
-                    System.out.println("____________________________________________________________");
-                    System.out.println("Oops! It's an invalid command :-(");
-                    System.out.println("____________________________________________________________\n");
+                    ui.showInvalidCommandError();
                     continue;
                 }
                 
                 Command command = Command.fromString(commandString);
                 switch (command) {
                     case BYE:
-                        exit();
-                        scanner.close();
+                        ui.showGoodbye();
+                        ui.close();
                         return;
                     case LIST:
                         toDoList.listTasks();
                         break;
                     case MARK:
                         toDoList.markTask(parts[1]);
-                        System.out.println("____________________________________________________________");
-                        System.out.println("Nice! I've marked this task as done: " );
-                        System.out.println(toDoList.getTask(parts[1]));
-                        System.out.println("____________________________________________________________\n");
+                        ui.showTaskMarked(toDoList.getTask(parts[1]));
                         break;
                     case UNMARK:
                         toDoList.unmarkTask(parts[1]);
-                        System.out.println("____________________________________________________________");
-                        System.out.println("OK, I've marked this task as not done yet: ");
-                        System.out.println(toDoList.getTask(parts[1]));
-                        System.out.println("____________________________________________________________\n");
+                        ui.showTaskUnmarked(toDoList.getTask(parts[1]));
                         break;
                     case DELETE:
                         Task deletedTask = toDoList.deleteTask(parts[1]);
-                        System.out.println("____________________________________________________________");
-                        System.out.println("Noted. I've removed this task:\n" + deletedTask);
-                        System.out.println("Now you have " + toDoList.getTaskCount() + " tasks in the list.");
-                        System.out.println("____________________________________________________________\n");
+                        ui.showTaskDeleted(deletedTask, toDoList.getTaskCount());
+                        break;
+                    case ON:
+                        if (parts.length < 2) {
+                            ui.showDateRequiredError();
+                            break;
+                        }
+                        String dateStr = input.substring(3).trim(); // Remove "on "
+                        toDoList.showTasksOnDate(dateStr);
                         break;
                     case TODO:
                     case DEADLINE:
                     case EVENT:   
                         Task addedtask = toDoList.addTask(input);
-                        System.out.println("____________________________________________________________");
-                        System.out.println("Got it. I've added this task:\n" + addedtask);
-                        System.out.println("Now you have " + toDoList.getTaskCount() + " tasks in the list.");
-                        System.out.println("____________________________________________________________\n");
+                        ui.showTaskAdded(addedtask, toDoList.getTaskCount());
                         break;
                 }
             } catch (VinceException e) {
-                System.out.println("____________________________________________________________");
-                System.out.println("Oops! " + e.getMessage());
-                System.out.println("____________________________________________________________\n");
+                ui.showError(e.getMessage());
             } 
         }
+    }
+    
+    public static void main(String[] args) {
+        new Vince().run();
     }
 }
