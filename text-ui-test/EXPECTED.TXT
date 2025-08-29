@@ -5,10 +5,6 @@ What can I do for you?
 ____________________________________________________________
 
 ____________________________________________________________
-Here are the tasks in your list:
-____________________________________________________________
-
-____________________________________________________________
 Got it. I've added this task:
 [T] [ ] read book
 Now you have 1 tasks in the list.
@@ -16,43 +12,31 @@ ____________________________________________________________
 
 ____________________________________________________________
 Got it. I've added this task:
-[D] [ ] return book (by: Sunday)
+[D] [ ] return book (by: Dec 15 2024, 18:00)
 Now you have 2 tasks in the list.
 ____________________________________________________________
 
 ____________________________________________________________
 Got it. I've added this task:
-[E] [ ] project meeting (from: Mon 2pm to: Mon 4pm)
+[E] [ ] project meeting (from: Dec 20 2024, 14:00 to: Dec 20 2024, 16:00)
 Now you have 3 tasks in the list.
 ____________________________________________________________
 
 ____________________________________________________________
 Here are the tasks in your list:
 1. [T] [ ] read book
-2. [D] [ ] return book (by: Sunday)
-3. [E] [ ] project meeting (from: Mon 2pm to: Mon 4pm)
+2. [D] [ ] return book (by: Dec 15 2024, 18:00)
+3. [E] [ ] project meeting (from: Dec 20 2024, 14:00 to: Dec 20 2024, 16:00)
 ____________________________________________________________
 
 ____________________________________________________________
-Nice! I've marked this task as done: 
-[D] [X] return book (by: Sunday)
+Tasks on Dec 15 2024:
+2. [D] [ ] return book (by: Dec 15 2024, 18:00)
 ____________________________________________________________
 
 ____________________________________________________________
-OK, I've marked this task as not done yet: 
-[D] [ ] return book (by: Sunday)
-____________________________________________________________
-
-____________________________________________________________
-Noted. I've removed this task:
-[T] [ ] read book
-Now you have 2 tasks in the list.
-____________________________________________________________
-
-____________________________________________________________
-Here are the tasks in your list:
-1. [D] [ ] return book (by: Sunday)
-2. [E] [ ] project meeting (from: Mon 2pm to: Mon 4pm)
+Tasks on Dec 20 2024:
+3. [E] [ ] project meeting (from: Dec 20 2024, 14:00 to: Dec 20 2024, 16:00)
 ____________________________________________________________
 
 ____________________________________________________________
