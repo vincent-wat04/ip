@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.List;
 
 public class Ui {
     private Scanner scanner;
@@ -90,6 +91,30 @@ public class Ui {
     public void showDateRequiredError() {
         showLine();
         System.out.println("Please specify a date! For instance, 'on <date>'");
+        showLine();
+        System.out.println();
+    }
+
+    public void showTaskList(List<String> lines) {
+        showLine();
+        System.out.println("Here are the tasks in your list:");
+        for (String line : lines) {
+            System.out.println(line);
+        }
+        showLine();
+        System.out.println();
+    }
+
+    public void showTasksOnDate(String dateLabel, List<String> lines) {
+        showLine();
+        System.out.println("Tasks on " + dateLabel + ":");
+        if (lines.isEmpty()) {
+            System.out.println("No tasks found on this date.");
+        } else {
+            for (String line : lines) {
+                System.out.println(line);
+            }
+        }
         showLine();
         System.out.println();
     }

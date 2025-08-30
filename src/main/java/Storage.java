@@ -3,12 +3,25 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Storage {
-    private static Path resolveDataFile() {
-        // Support running from project root or from text-ui-test directory
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+    private final Path dataFile;
+
+    public Storage() {
+        this(resolveDefaultDataFile());
+    }
+
+    public Storage(Path dataFile) {
+        this.dataFile = dataFile;
+    }
+
+    private static Path resolveDefaultDataFile() {
         Path base = Paths.get(".");
         if (Files.isDirectory(Paths.get("text-ui-test"))) {
             base = Paths.get("..");
@@ -17,10 +30,9 @@ public class Storage {
         return dataDir.resolve("vince.txt");
     }
 
-    public static ArrayList<Task> load() {
+    public ArrayList<Task> load() {
         ArrayList<Task> tasks = new ArrayList<Task>();
         try {
-            Path dataFile = resolveDataFile();
             Path dataDir = dataFile.getParent();
             if (!Files.exists(dataDir)) {
                 Files.createDirectories(dataDir);
@@ -35,13 +47,8 @@ public class Storage {
                     continue;
                 }
                 try {
-                    // Expected formats:
-                    // T | 1 | description
-                    // D | 0 | description | by
-                    // E | 1 | description | from | to
                     String[] parts = line.split("\\|", -1);
                     if (parts.length < 3) {
-                        // corrupted line, skip
                         continue;
                     }
                     String type = parts[0].trim();
@@ -56,17 +63,17 @@ public class Storage {
                             break;
                         case "D":
                             if (parts.length < 4) {
-                                continue; // corrupted
+                                continue;
                             }
-                            String by = parts[3].trim();
+                            LocalDateTime by = LocalDateTime.parse(parts[3].trim(), DATE_TIME_FORMATTER);
                             task = new Deadline(description, by);
                             break;
                         case "E":
                             if (parts.length < 5) {
-                                continue; // corrupted
+                                continue;
                             }
-                            String from = parts[3].trim();
-                            String to = parts[4].trim();
+                            LocalDateTime from = LocalDateTime.parse(parts[3].trim(), DATE_TIME_FORMATTER);
+                            LocalDateTime to = LocalDateTime.parse(parts[4].trim(), DATE_TIME_FORMATTER);
                             task = new Event(description, from, to);
                             break;
                         default:
@@ -77,19 +84,17 @@ public class Storage {
                     }
                     tasks.add(task);
                 } catch (Exception e) {
-                    // Skip corrupted line gracefully
                     continue;
                 }
             }
         } catch (IOException ioException) {
-            throw new VinceException("Failed to load data from disk!" );
+            throw new VinceException("Failed to load data from disk!");
         }
         return tasks;
     }
 
-    public static void save(ArrayList<Task> tasks) {
+    public void save(ArrayList<Task> tasks) {
         try {
-            Path dataFile = resolveDataFile();
             Path dataDir = dataFile.getParent();
             if (!Files.exists(dataDir)) {
                 Files.createDirectories(dataDir);
@@ -101,10 +106,12 @@ public class Storage {
                     line = String.format("T | %d | %s", task.isDone() ? 1 : 0, task.getDescription());
                 } else if (task instanceof Deadline) {
                     Deadline d = (Deadline) task;
-                    line = String.format("D | %d | %s | %s", task.isDone() ? 1 : 0, task.getDescription(), d.getBy());
+                    line = String.format("D | %d | %s | %s", task.isDone() ? 1 : 0, task.getDescription(),
+                        d.getBy().format(DATE_TIME_FORMATTER));
                 } else if (task instanceof Event) {
                     Event e = (Event) task;
-                    line = String.format("E | %d | %s | %s | %s", task.isDone() ? 1 : 0, task.getDescription(), e.getFrom(), e.getTo());
+                    line = String.format("E | %d | %s | %s | %s", task.isDone() ? 1 : 0, task.getDescription(),
+                        e.getFrom().format(DATE_TIME_FORMATTER), e.getTo().format(DATE_TIME_FORMATTER));
                 } else {
                     line = String.format("T | %d | %s", task.isDone() ? 1 : 0, task.getDescription());
                 }

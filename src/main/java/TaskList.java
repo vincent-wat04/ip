@@ -1,105 +1,89 @@
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
-public class ToDoList {
+public class TaskList {
+    private final Storage storage;
     private ArrayList<Task> tasks = new ArrayList<Task>();
-    private Ui ui;
-    
-    public ToDoList(Ui ui) {
-        this.ui = ui;
-        this.tasks = Storage.load();
+
+    public TaskList() {
+        this.storage = new Storage();
+        this.tasks = storage.load();
     }
-    
-    public Task addTask(String task) throws VinceException {
-        String type = task.split(" ")[0];
-        
+
+    public Task addTask(String input) throws VinceException {
+        String type = input.split(" ")[0];
         TaskType taskType = TaskType.fromCommand(type);
         if (taskType == null) {
-            tasks.add(new Task(task));
-            Storage.save(tasks);
+            tasks.add(new Task(input));
+            storage.save(tasks);
             return tasks.get(tasks.size() - 1);
         }
-        
         switch (taskType) {
             case DEADLINE:
-                if (!task.contains(" /by ")) {
+                if (!input.contains(" /by ")) {
                     throw new VinceException("Deadline task must contain ' /by ' to specify the deadline!");
                 }
-                String[] deadlineParts = task.split(" /by ");
+                String[] deadlineParts = input.split(" /by ");
                 tasks.add(new Deadline(deadlineParts[0].substring(taskType.getPrefixLength()), deadlineParts[1]));
                 break;
             case EVENT:
-                if (!task.contains(" /from ") || !task.contains(" /to ")) {
+                if (!input.contains(" /from ") || !input.contains(" /to ")) {
                     throw new VinceException("Event task must contain ' /from ' and ' /to ' to specify the event time!");
                 }
-                String[] eventParts = task.split(" /from | /to ");
+                String[] eventParts = input.split(" /from | /to ");
                 tasks.add(new Event(eventParts[0].substring(taskType.getPrefixLength()), eventParts[1], eventParts[2]));
                 break;
-            case TODO:    
-                if (task.length() < taskType.getPrefixLength()) {
+            case TODO:
+                if (input.length() < taskType.getPrefixLength()) {
                     throw new VinceException("Todo task must start with 'todo ' and have a description!");
                 }
-                tasks.add(new Todo(task.substring(taskType.getPrefixLength())));
+                tasks.add(new Todo(input.substring(taskType.getPrefixLength())));
                 break;
         }
-        Storage.save(tasks);
+        storage.save(tasks);
         return tasks.get(tasks.size() - 1);
     }
 
-    public int getTaskCount() {
-        return tasks.size();
-    }
-    
-    public void listTasks() {
-        ui.showLine();
-        System.out.println("Here are the tasks in your list:");
+    public int size() { return tasks.size(); }
+
+    public List<String> list() {
+        List<String> lines = new ArrayList<String>();
         for (int i = 0; i < tasks.size(); i++) {
-            System.out.println((i + 1) + ". " + tasks.get(i));
+            lines.add((i + 1) + ". " + tasks.get(i));
         }
-        ui.showLine();
-        System.out.println();
+        return lines;
     }
 
-    public void showTasksOnDate(String dateStr) throws VinceException {
+    public List<String> tasksOnDateLines(String dateStr) throws VinceException {
         LocalDate targetDate = DateTimeParser.parseDateTime(dateStr).toLocalDate();
-        
-        ui.showLine();
-        System.out.println("Tasks on " + DateTimeParser.formatDate(targetDate.atStartOfDay()) + ":");
-        
-        boolean found = false;
+        List<String> lines = new ArrayList<String>();
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
-            LocalDateTime taskDate = null;
-            
             if (task instanceof Deadline) {
-                taskDate = ((Deadline) task).getBy();
+                LocalDateTime taskDate = ((Deadline) task).getBy();
+                if (taskDate.toLocalDate().equals(targetDate)) {
+                    lines.add((i + 1) + ". " + task);
+                }
             } else if (task instanceof Event) {
                 Event event = (Event) task;
-                // Check if the event spans the target date
                 LocalDate eventStartDate = event.getFrom().toLocalDate();
                 LocalDate eventEndDate = event.getTo().toLocalDate();
                 if (!targetDate.isBefore(eventStartDate) && !targetDate.isAfter(eventEndDate)) {
-                    System.out.println((i + 1) + ". " + task);
-                    found = true;
+                    lines.add((i + 1) + ". " + task);
                 }
-                continue;
-            }
-            
-            if (taskDate != null && taskDate.toLocalDate().equals(targetDate)) {
-                System.out.println((i + 1) + ". " + task);
-                found = true;
             }
         }
-        
-        if (!found) {
-            System.out.println("No tasks found on this date.");
-        }
-        ui.showLine();
-        System.out.println();
+        return lines;
     }
 
-    public Task getTask(String index) {
+    public String tasksOnDateLabel(String dateStr) {
+        LocalDate targetDate = DateTimeParser.parseDateTime(dateStr).toLocalDate();
+        return DateTimeParser.formatDate(targetDate.atStartOfDay());
+    }
+
+    public Task get(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
             throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
@@ -107,32 +91,31 @@ public class ToDoList {
         return tasks.get(taskIndex);
     }
 
-    public void markTask(String index) {
+    public void mark(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
             throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         tasks.get(taskIndex).mark();
-        Storage.save(tasks);
+        storage.save(tasks);
     }
 
-    public void unmarkTask(String index) {
+    public void unmark(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
             throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         tasks.get(taskIndex).unmark();
-        Storage.save(tasks);
+        storage.save(tasks);
     }
 
-    public Task deleteTask(String index) {
+    public Task delete(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
             throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         Task removed = tasks.remove(taskIndex);
-        Storage.save(tasks);
+        storage.save(tasks);
         return removed;
     }
 }
-
