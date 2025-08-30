@@ -1,5 +1,17 @@
+package vince.util;
+
+import vince.command.Command;
+import vince.command.ExitCommand;
+import vince.command.ListCommand;
+import vince.command.MarkCommand;
+import vince.command.UnmarkCommand;
+import vince.command.DeleteCommand;
+import vince.command.OnDateCommand;
+import vince.command.AddCommand;
+import vince.exception.VinceException;
+
 public class Parser {
-    public static Command parse(String input) {
+    public static Command parse(String input) throws VinceException {
         if (input == null || input.trim().isEmpty()) {
             return null;
         }
@@ -26,7 +38,7 @@ public class Parser {
             case "event":
                 return new AddCommand(trimmed);
             default:
-                return null;
+                throw new VinceException("I'm sorry, but I don't know what that means :-(");
         }
     }
 }

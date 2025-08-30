@@ -1,3 +1,5 @@
+package vince.util;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -6,6 +8,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import vince.exception.VinceException;
 
 public class DateTimeParser {
     private static final Pattern DATE_TIME_PATTERN = Pattern.compile("(\\d{1,2}/\\d{1,2}/\\d{4})\\s+(\\d{4})");

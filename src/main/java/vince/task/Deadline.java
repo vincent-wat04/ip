@@ -1,4 +1,8 @@
+package vince.task;
+
 import java.time.LocalDateTime;
+import vince.exception.VinceException;
+import vince.util.DateTimeParser;
 
 public class Deadline extends Task {
     private LocalDateTime by;

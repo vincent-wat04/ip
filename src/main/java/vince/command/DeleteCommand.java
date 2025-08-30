@@ -1,3 +1,10 @@
+package vince.command;
+
+import vince.storage.TaskList;
+import vince.ui.Ui;
+import vince.task.Task;
+import vince.exception.VinceException;
+
 public class DeleteCommand extends Command {
     private final String index;
 
@@ -6,7 +13,7 @@ public class DeleteCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui) {
+    public void execute(TaskList tasks, Ui ui) throws VinceException {
         Task deleted = tasks.delete(index);
         ui.showTaskDeleted(deleted, tasks.size());
     }

@@ -1,5 +1,8 @@
+package vince.ui;
+
 import java.util.Scanner;
 import java.util.List;
+import vince.task.Task;
 
 public class Ui {
     private Scanner scanner;

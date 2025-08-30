@@ -1,3 +1,10 @@
+package vince.command;
+
+import vince.storage.TaskList;
+import vince.ui.Ui;
+import vince.task.Task;
+import vince.exception.VinceException;
+
 public class AddCommand extends Command {
     private final String rawInput;
 
@@ -6,7 +13,7 @@ public class AddCommand extends Command {
     }
 
     @Override
-    public void execute(TaskList tasks, Ui ui) {
+    public void execute(TaskList tasks, Ui ui) throws VinceException {
         Task added = tasks.addTask(rawInput);
         ui.showTaskAdded(added, tasks.size());
     }

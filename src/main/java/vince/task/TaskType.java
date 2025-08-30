@@ -1,3 +1,5 @@
+package vince.task;
+
 public enum TaskType {
     TODO("todo", 5),
     DEADLINE("deadline", 9),

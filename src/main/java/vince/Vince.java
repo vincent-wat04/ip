@@ -1,3 +1,11 @@
+package vince;
+
+import vince.ui.Ui;
+import vince.storage.TaskList;
+import vince.command.Command;
+import vince.util.Parser;
+import vince.exception.VinceException;
+
 public class Vince {
     private Ui ui;
     private TaskList tasks;

@@ -1,3 +1,5 @@
+package vince.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,6 +9,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import vince.task.Task;
+import vince.task.Todo;
+import vince.task.Deadline;
+import vince.task.Event;
+import vince.exception.VinceException;
 
 public class Storage {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;

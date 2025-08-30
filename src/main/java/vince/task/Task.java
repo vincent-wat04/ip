@@ -1,3 +1,7 @@
+package vince.task;
+
+import vince.exception.VinceException;
+
 public class Task {
     private String description;
     private boolean isDone;

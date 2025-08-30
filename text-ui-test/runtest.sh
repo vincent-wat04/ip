@@ -12,15 +12,19 @@ then
     rm ACTUAL.TXT
 fi
 
+# remove data file to ensure clean state
+rm -f ../data/vince.txt
+rm -f ./data/vince.txt
+
 # compile the code into the bin folder, terminates if error occurred
-if ! javac -cp ../src/main/java -Xlint:none -d ../bin ../src/main/java/*.java
+if ! javac -cp ../src/main/java -Xlint:none -d ../bin ../src/main/java/vince/*.java ../src/main/java/vince/*/*.java
 then
     echo "********** BUILD FAILURE **********"
     exit 1
 fi
 
 # run the program, feed commands from input.txt file and redirect the output to the ACTUAL.TXT
-java -classpath ../bin Vince < input.txt > ACTUAL.TXT
+java -classpath ../bin vince.Vince < input.txt > ACTUAL.TXT
 
 # convert to UNIX format
 cp EXPECTED.TXT EXPECTED-UNIX.TXT
