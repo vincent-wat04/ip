@@ -10,7 +10,16 @@ import vince.command.OnDateCommand;
 import vince.command.AddCommand;
 import vince.exception.VinceException;
 
+/**
+ * Parses raw user input into executable {@link Command} instances.
+ */
 public class Parser {
+    /**
+     * Parses a command line into a {@link Command}.
+     * @param input raw input line
+     * @return a concrete command instance
+     * @throws VinceException if the command is not recognized
+     */
     public static Command parse(String input) throws VinceException {
         if (input == null || input.trim().isEmpty()) {
             return null;
