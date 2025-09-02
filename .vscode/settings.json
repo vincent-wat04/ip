@@ -1,14 +1,11 @@
 {
-    // 其他已有的工作区设置...
-
     "java.configuration.runtimes": [
         {
-            "name": "JavaSE-17", // 运行时的名称，可以自定义
-            "path": "/Users/quqiancheng/.sdkman/candidates/java/17.0.14.fx-zulu", // 👈 替换为你的实际路径！
-            "default": true // 将此设为默认JDK
+            "name": "JavaSE-17",
+            "path": "/Users/quqiancheng/.sdkman/candidates/java/17.0.14.fx-zulu",
+            "default": true
         }
     ],
-    // 也可以同时设置 java.home 来双重保证
     "java.jdt.ls.java.home": "/Users/quqiancheng/.sdkman/candidates/java/17.0.14.fx-zulu",
-    "java.configuration.updateBuildConfiguration": "interactive" // 👈 同样替换为你的路径！
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

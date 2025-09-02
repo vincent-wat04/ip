@@ -8,9 +8,19 @@ import vince.command.UnmarkCommand;
 import vince.command.DeleteCommand;
 import vince.command.OnDateCommand;
 import vince.command.AddCommand;
+import vince.command.FindCommand;
 import vince.exception.VinceException;
 
+/**
+ * Parses raw user input into executable {@link Command} instances.
+ */
 public class Parser {
+    /**
+     * Parses a command line into a {@link Command}.
+     * @param input raw input line
+     * @return a concrete command instance
+     * @throws VinceException if the command is not recognized
+     */
     public static Command parse(String input) throws VinceException {
         if (input == null || input.trim().isEmpty()) {
             return null;
@@ -29,6 +39,10 @@ public class Parser {
                 return new UnmarkCommand(parts.length > 1 ? parts[1] : "");
             case "delete":
                 return new DeleteCommand(parts.length > 1 ? parts[1] : "");
+            case "find": {
+                String keyword = trimmed.length() > 4 ? trimmed.substring(4).trim() : "";
+                return new FindCommand(keyword);
+            }
             case "on": {
                 String dateStr = trimmed.length() > 3 ? trimmed.substring(3).trim() : "";
                 return new OnDateCommand(dateStr);
