@@ -127,4 +127,10 @@ public class TaskList {
         storage.save(tasks);
         return removed;
     }
+
+    public void deleteAll() {
+        // first remove all tasks stored in local variable
+        tasks.clear();
+        storage.save(tasks);
+    }
 }

@@ -30,13 +30,10 @@ public class Vince {
                     ui.showInvalidCommandError();
                     continue;
                 }
-                ui.showLine();
                 command.execute(tasks, ui);
                 isExit = command.isExit();
             } catch (VinceException e) {
                 ui.showError(e.getMessage());
-            } finally {
-                ui.showLine();
             }
         }
     }
