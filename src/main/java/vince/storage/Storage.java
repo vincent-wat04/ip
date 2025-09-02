@@ -15,15 +15,27 @@ import vince.task.Deadline;
 import vince.task.Event;
 import vince.exception.VinceException;
 
+/**
+ * Handles persistence of tasks to disk and loading them back into memory.
+ * Uses a plain text, pipe-delimited format for simplicity and portability.
+ */
 public class Storage {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final Path dataFile;
 
+    /**
+     * Constructs a Storage pointing at the default data file path (data/vince.txt),
+     * automatically adjusting when invoked from the text-ui-test directory.
+     */
     public Storage() {
         this(resolveDefaultDataFile());
     }
 
+    /**
+     * Constructs a Storage pointing at the given data file path.
+     * @param dataFile the file path to use for persistence
+     */
     public Storage(Path dataFile) {
         this.dataFile = dataFile;
     }
@@ -37,6 +49,11 @@ public class Storage {
         return dataDir.resolve("vince.txt");
     }
 
+    /**
+     * Loads tasks from disk. Creates the directory/file if they don't exist.
+     * Lines that cannot be parsed are skipped.
+     * @return tasks loaded from the data file (possibly empty)
+     */
     public ArrayList<Task> load() {
         ArrayList<Task> tasks = new ArrayList<Task>();
         try {
@@ -100,6 +117,10 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Saves the given tasks to disk, overwriting the existing file contents.
+     * @param tasks in-memory tasks to persist
+     */
     public void save(ArrayList<Task> tasks) {
         try {
             Path dataDir = dataFile.getParent();

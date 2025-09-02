@@ -4,13 +4,21 @@ import java.util.Scanner;
 import java.util.List;
 import vince.task.Task;
 
+/**
+ * Handles all user interaction concerns: printing messages, reading commands,
+ * and formatting lists for display. Keeps I/O concerns isolated from logic.
+ */
 public class Ui {
     private Scanner scanner;
     
+    /**
+     * Creates a UI bound to standard input and output streams.
+     */
     public Ui() {
         this.scanner = new Scanner(System.in);
     }
     
+    /** Prints the welcome banner. */
     public void showWelcome() {
         showLine();
         System.out.println("Hello I'm Vince");
@@ -20,6 +28,7 @@ public class Ui {
         System.out.println();
     }
     
+    /** Prints the goodbye banner and trailing divider. */
     public void showGoodbye() {
         showLine();
         System.out.println("Bye. Hope to see you again soon!");
@@ -28,14 +37,23 @@ public class Ui {
         System.out.println();
     }
     
+    /**
+     * Reads a single line command from the user.
+     * @return the raw command string
+     */
     public String readCommand() {
         return scanner.nextLine();
     }
     
+    /** Prints a horizontal divider line. */
     public void showLine() {
         System.out.println("____________________________________________________________");
     }
     
+    /**
+     * Prints an error message framed by divider lines.
+     * @param message explanation of the error
+     */
     public void showError(String message) {
         showLine();
         System.out.println("Oops! " + message);
@@ -43,6 +61,7 @@ public class Ui {
         System.out.println();
     }
     
+    /** Prints an error for empty commands. */
     public void showEmptyCommandError() {
         showLine();
         System.out.println("Oops! The command cannot be empty!");
@@ -50,6 +69,7 @@ public class Ui {
         System.out.println();
     }
     
+    /** Prints an error for unknown commands. */
     public void showInvalidCommandError() {
         showLine();
         System.out.println("Oops! It's an invalid command :-(");
@@ -57,6 +77,11 @@ public class Ui {
         System.out.println();
     }
     
+    /**
+     * Shows a confirmation that a task was added.
+     * @param task the task added
+     * @param taskCount new size of the task list
+     */
     public void showTaskAdded(Task task, int taskCount) {
         showLine();
         System.out.println("Got it. I've added this task:");
@@ -66,6 +91,10 @@ public class Ui {
         System.out.println();
     }
     
+    /**
+     * Shows that a task was marked done.
+     * @param task the task that has been marked
+     */
     public void showTaskMarked(Task task) {
         showLine();
         System.out.println("Nice! I've marked this task as done:");
@@ -74,6 +103,10 @@ public class Ui {
         System.out.println();
     }
     
+    /**
+     * Shows that a task was unmarked.
+     * @param task the task that has been unmarked
+     */
     public void showTaskUnmarked(Task task) {
         showLine();
         System.out.println("OK, I've marked this task as not done yet:");
@@ -82,6 +115,11 @@ public class Ui {
         System.out.println();
     }
     
+    /**
+     * Shows a confirmation that a task was deleted.
+     * @param task the task removed
+     * @param taskCount resulting size of the task list
+     */
     public void showTaskDeleted(Task task, int taskCount) {
         showLine();
         System.out.println("Noted. I've removed this task:");
@@ -91,6 +129,7 @@ public class Ui {
         System.out.println();
     }
     
+    /** Prints an error that a date is required for this operation. */
     public void showDateRequiredError() {
         showLine();
         System.out.println("Please specify a date! For instance, 'on <date>'");
@@ -98,6 +137,10 @@ public class Ui {
         System.out.println();
     }
 
+    /**
+     * Displays a numbered list of tasks.
+     * @param lines preformatted task lines (e.g. "1. [T] read book")
+     */
     public void showTaskList(List<String> lines) {
         showLine();
         System.out.println("Here are the tasks in your list:");
@@ -108,6 +151,11 @@ public class Ui {
         System.out.println();
     }
 
+    /**
+     * Displays the set of tasks that occur on a specific date.
+     * @param dateLabel formatted date label (e.g., "Dec 15 2024")
+     * @param lines preformatted task lines for that date
+     */
     public void showTasksOnDate(String dateLabel, List<String> lines) {
         showLine();
         System.out.println("Tasks on " + dateLabel + ":");
@@ -122,6 +170,7 @@ public class Ui {
         System.out.println();
     }
     
+    /** Closes the scanner backing this UI. */
     public void close() {
         scanner.close();
     }

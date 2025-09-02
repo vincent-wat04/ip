@@ -10,11 +10,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import vince.exception.VinceException;
 
+/**
+ * Utility for parsing and formatting dates/times used in tasks.
+ * Supports multiple input formats and produces English-formatted outputs.
+ */
 public class DateTimeParser {
     private static final Pattern DATE_TIME_PATTERN = Pattern.compile("(\\d{1,2}/\\d{1,2}/\\d{4})\\s+(\\d{4})");
     private static final Pattern DATE_PATTERN = Pattern.compile("(\\d{1,2}/\\d{1,2}/\\d{4})");
     private static final Pattern TIME_PATTERN = Pattern.compile("(\\d{4})");
     
+    /**
+     * Parses a date/time string into a LocalDateTime.
+     * Accepted formats include: yyyy-MM-dd, dd/MM/yyyy HHmm, dd/MM/yyyy, HHmm.
+     * @param dateTimeStr input string
+     * @return parsed LocalDateTime
+     * @throws VinceException if parsing fails or input is blank
+     */
     public static LocalDateTime parseDateTime(String dateTimeStr) throws VinceException {
         if (dateTimeStr == null || dateTimeStr.trim().isEmpty()) {
             throw new VinceException("Date/time string cannot be empty!");
@@ -72,14 +83,19 @@ public class DateTimeParser {
             ". Supported formats: yyyy-mm-dd, dd/mm/yyyy HHMM, dd/mm/yyyy, HHMM");
     }
     
+    /**
+     * Formats a date/time as an English string, e.g. "Dec 15 2024, 18:00".
+     */
     public static String formatDateTime(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy, HH:mm", Locale.ENGLISH));
     }
     
+    /** Formats a date as an English string, e.g. "Dec 15 2024". */
     public static String formatDate(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.ENGLISH));
     }
     
+    /** Formats a time as 24-hour HH:mm. */
     public static String formatTime(LocalDateTime dateTime) {
         return dateTime.format(DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH));
     }
