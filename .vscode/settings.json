@@ -8,7 +8,6 @@
     ],
     "java.jdt.ls.java.home": "/Users/quqiancheng/.sdkman/candidates/java/17.0.14.fx-zulu",
     "java.configuration.updateBuildConfiguration": "interactive",
-
     // SE-EDU coding standard settings
     "editor.tabSize": 4,
     "editor.insertSpaces": true,

@@ -8,6 +8,7 @@ import vince.command.UnmarkCommand;
 import vince.command.DeleteCommand;
 import vince.command.OnDateCommand;
 import vince.command.AddCommand;
+import vince.command.FindCommand;
 import vince.exception.VinceException;
 
 /**
@@ -38,6 +39,10 @@ public class Parser {
                 return new UnmarkCommand(parts.length > 1 ? parts[1] : "");
             case "delete":
                 return new DeleteCommand(parts.length > 1 ? parts[1] : "");
+            case "find": {
+                String keyword = trimmed.length() > 4 ? trimmed.substring(4).trim() : "";
+                return new FindCommand(keyword);
+            }
             case "on": {
                 String dateStr = trimmed.length() > 3 ? trimmed.substring(3).trim() : "";
                 return new OnDateCommand(dateStr);
