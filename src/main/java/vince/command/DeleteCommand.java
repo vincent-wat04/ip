@@ -17,4 +17,8 @@ public class DeleteCommand extends Command {
         Task deleted = tasks.delete(index);
         ui.showTaskDeleted(deleted, tasks.size());
     }
+
+    public String getIndex() {
+        return index;
+    }
 }

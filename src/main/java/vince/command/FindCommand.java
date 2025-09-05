@@ -20,4 +20,8 @@ public class FindCommand extends Command {
         List<String> lines = tasks.find(keyword);
         ui.showTaskList(lines);
     }
+
+    public String getKeyword() {
+        return keyword;
+    }
 }

@@ -2,6 +2,8 @@ todo read book
 deadline return book /by 15/12/2024 1800
 event project meeting /from 20/12/2024 1400 /to 20/12/2024 1600
 list
+find book
+find meeting
 on 15/12/2024
 on 20/12/2024
 bye

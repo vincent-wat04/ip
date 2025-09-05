@@ -18,4 +18,8 @@ public class OnDateCommand extends Command {
         List<String> lines = tasks.tasksOnDateLines(dateStr);
         ui.showTasksOnDate(label, lines);
     }
+
+    public String getDateStr() {
+        return dateStr;
+    }
 }

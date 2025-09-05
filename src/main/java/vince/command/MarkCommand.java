@@ -18,4 +18,8 @@ public class MarkCommand extends Command {
         tasks.mark(index);
         ui.showTaskMarked(task);
     }
+
+    public String getIndex() {
+        return index;
+    }
 }

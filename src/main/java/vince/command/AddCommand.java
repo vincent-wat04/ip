@@ -17,4 +17,8 @@ public class AddCommand extends Command {
         Task added = tasks.addTask(rawInput);
         ui.showTaskAdded(added, tasks.size());
     }
+
+    public String getInput() {
+        return rawInput;
+    }
 }

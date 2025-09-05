@@ -29,7 +29,11 @@ public class Ui {
     }
     
     public String readCommand() {
-        return scanner.nextLine();
+        if (scanner.hasNextLine()) {
+            return scanner.nextLine();
+        } else {
+            return null;
+        }
     }
     
     public void showLine() {
