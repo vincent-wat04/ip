@@ -13,15 +13,18 @@ import vince.util.DateTimeParser;
 import vince.exception.VinceException;
 
 /**
- * In-memory collection of tasks that also integrates persistence via {@link Storage}.
- * Provides operations to add, list, query-by-date, and mutate tasks (mark/unmark/delete).
+ * In-memory collection of tasks that also integrates persistence via
+ * {@link Storage}.
+ * Provides operations to add, list, query-by-date, and mutate tasks
+ * (mark/unmark/delete).
  */
 public class TaskList {
     private final Storage storage;
     private ArrayList<Task> tasks = new ArrayList<Task>();
 
     /**
-     * Constructs a task list, loading existing tasks from the default storage location if present.
+     * Constructs a task list, loading existing tasks from the default storage
+     * location if present.
      */
     public TaskList() {
         this.storage = new Storage();
@@ -31,6 +34,7 @@ public class TaskList {
     /**
      * Parses the raw user input and adds the corresponding task.
      * Supports todo, deadline (/by) and event (/from ... /to ...) formats.
+     * 
      * @param input raw input line
      * @return the newly added task
      * @throws VinceException if the input format is invalid
@@ -53,7 +57,8 @@ public class TaskList {
                 break;
             case EVENT:
                 if (!input.contains(" /from ") || !input.contains(" /to ")) {
-                    throw new VinceException("Event task must contain ' /from ' and ' /to ' to specify the event time!");
+                    throw new VinceException(
+                            "Event task must contain ' /from ' and ' /to ' to specify the event time!");
                 }
                 String[] eventParts = input.split(" /from | /to ");
                 tasks.add(new Event(eventParts[0].substring(taskType.getPrefixLength()), eventParts[1], eventParts[2]));
@@ -71,12 +76,16 @@ public class TaskList {
 
     /**
      * Returns the number of tasks currently stored.
+     * 
      * @return task count
      */
-    public int size() { return tasks.size(); }
+    public int size() {
+        return tasks.size();
+    }
 
     /**
      * Builds preformatted numbered lines for all tasks in this list.
+     * 
      * @return list of lines ready for display
      */
     public List<String> list() {
@@ -88,12 +97,14 @@ public class TaskList {
     }
 
     /**
-     * Builds preformatted numbered lines for tasks whose description contains the keyword.
+     * Builds preformatted numbered lines for tasks whose description contains the
+     * keyword.
      * Matching is case-insensitive and ignores leading/trailing spaces in keyword.
+     * 
      * @param keyword search keyword
      * @return matching task lines
      */
-    public List<String> find(String keyword) {
+    public List<String> findTasks(String keyword) {
         String key = keyword == null ? "" : keyword.trim().toLowerCase();
         List<String> lines = new ArrayList<String>();
         if (key.isEmpty()) {
@@ -111,6 +122,7 @@ public class TaskList {
     /**
      * Builds preformatted numbered lines for tasks that occur on the given date.
      * Deadlines are matched by their date; events by spanning the date range.
+     * 
      * @param dateStr date string accepted by {@link DateTimeParser}
      * @return lines for tasks matching that date
      * @throws VinceException if the date string is invalid
@@ -139,6 +151,7 @@ public class TaskList {
 
     /**
      * Formats the target date label for display.
+     * 
      * @param dateStr date string accepted by {@link DateTimeParser}
      * @return formatted label such as "Dec 15 2024"
      */
@@ -149,6 +162,7 @@ public class TaskList {
 
     /**
      * Retrieves a task by 1-based index string.
+     * 
      * @param index 1-based index string (e.g., "1")
      * @return the task at that index
      * @throws VinceException if index is invalid or out of bounds
@@ -156,20 +170,23 @@ public class TaskList {
     public Task get(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
+            throw new VinceException(
+                    "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         return tasks.get(taskIndex);
     }
 
     /**
      * Marks a task as done.
+     * 
      * @param index 1-based index of the task
      * @throws VinceException if index is invalid or out of bounds
      */
     public void mark(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
+            throw new VinceException(
+                    "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         tasks.get(taskIndex).mark();
         storage.save(tasks);
@@ -177,13 +194,15 @@ public class TaskList {
 
     /**
      * Unmarks a task (set as not done).
+     * 
      * @param index 1-based index of the task
      * @throws VinceException if index is invalid or out of bounds
      */
     public void unmark(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
+            throw new VinceException(
+                    "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         tasks.get(taskIndex).unmark();
         storage.save(tasks);
@@ -191,6 +210,7 @@ public class TaskList {
 
     /**
      * Deletes a task by 1-based index.
+     * 
      * @param index 1-based index string of the task to remove
      * @return the removed task
      * @throws VinceException if index is invalid or out of bounds
@@ -198,7 +218,8 @@ public class TaskList {
     public Task delete(String index) {
         int taskIndex = Integer.parseInt(index) - 1;
         if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new VinceException("Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
+            throw new VinceException(
+                    "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
         Task removed = tasks.remove(taskIndex);
         storage.save(tasks);

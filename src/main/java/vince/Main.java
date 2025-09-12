@@ -138,10 +138,10 @@ public class Main extends Application {
      */
     private void handleUserInput() {
         Label userText = new Label(userInput.getText());
-        Label dukeText = new Label(getResponse(userInput.getText()));
+        Label vinceText = new Label(getResponse(userInput.getText()));
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(userText, new ImageView(user)),
-                DialogBox.getVinceDialog(dukeText, new ImageView(vince)));
+                DialogBox.getVinceDialog(vinceText, new ImageView(vince)));
         userInput.clear();
     }
 
@@ -202,7 +202,7 @@ public class Main extends Application {
                 response.append("Now you have ").append(tasks.size()).append(" tasks in the list.");
             } else if (command instanceof vince.command.FindCommand) {
                 var findCommand = (vince.command.FindCommand) command;
-                var lines = tasks.find(findCommand.getKeyword());
+                var lines = tasks.findTasks(findCommand.getKeyword());
                 if (lines.isEmpty()) {
                     response.append("No tasks found matching '").append(findCommand.getKeyword()).append("'.");
                 } else {
