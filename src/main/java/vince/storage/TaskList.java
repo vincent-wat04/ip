@@ -173,7 +173,9 @@ public class TaskList {
             throw new VinceException(
                     "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
-        return tasks.get(taskIndex);
+        Task result = tasks.get(taskIndex);
+        assert result != null : "Task at valid index should not be null";
+        return result;
     }
 
     /**
@@ -188,7 +190,11 @@ public class TaskList {
             throw new VinceException(
                     "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
-        tasks.get(taskIndex).mark();
+        Task task = tasks.get(taskIndex);
+        assert task != null : "Task at valid index should not be null";
+        assert !task.isDone() : "Task should not already be marked as done";
+        task.mark();
+        assert task.isDone() : "Task should be marked as done after mark() call";
         storage.save(tasks);
     }
 
@@ -204,7 +210,11 @@ public class TaskList {
             throw new VinceException(
                     "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
-        tasks.get(taskIndex).unmark();
+        Task task = tasks.get(taskIndex);
+        assert task != null : "Task at valid index should not be null";
+        assert task.isDone() : "Task should be marked as done before unmarking";
+        task.unmark();
+        assert !task.isDone() : "Task should not be marked as done after unmark() call";
         storage.save(tasks);
     }
 
@@ -221,7 +231,10 @@ public class TaskList {
             throw new VinceException(
                     "Task index " + (taskIndex + 1) + " is out of range! You have " + tasks.size() + " tasks.");
         }
+        int originalSize = tasks.size();
         Task removed = tasks.remove(taskIndex);
+        assert removed != null : "Removed task should not be null";
+        assert tasks.size() == originalSize - 1 : "Task list size should decrease by 1 after deletion";
         storage.save(tasks);
         return removed;
     }

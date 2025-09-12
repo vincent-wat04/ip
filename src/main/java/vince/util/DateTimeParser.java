@@ -32,11 +32,14 @@ public class DateTimeParser {
         }
         
         String input = dateTimeStr.trim();
+        assert input != null && !input.isEmpty() : "Input should not be null or empty after trimming";
         
         // Try yyyy-mm-dd format first
         try {
             LocalDate date = LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            return date.atStartOfDay();
+            LocalDateTime result = date.atStartOfDay();
+            assert result != null : "Parsed LocalDateTime should not be null";
+            return result;
         } catch (DateTimeParseException e) {
             // Continue to other formats
         }
@@ -47,11 +50,14 @@ public class DateTimeParser {
             try {
                 String dateStr = dateTimeMatcher.group(1);
                 String timeStr = dateTimeMatcher.group(2);
+                assert dateStr != null && timeStr != null : "Matched groups should not be null";
                 
                 LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 LocalTime time = LocalTime.parse(timeStr, DateTimeFormatter.ofPattern("HHmm"));
                 
-                return LocalDateTime.of(date, time);
+                LocalDateTime result = LocalDateTime.of(date, time);
+                assert result != null : "Parsed LocalDateTime should not be null";
+                return result;
             } catch (DateTimeParseException e) {
                 throw new VinceException("Invalid date/time format: " + input + ". Use dd/mm/yyyy HHMM or yyyy-mm-dd");
             }
