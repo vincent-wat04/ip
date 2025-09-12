@@ -26,8 +26,11 @@ public class Parser {
             return null;
         }
         String trimmed = input.trim();
+        assert trimmed != null && !trimmed.isEmpty() : "Trimmed input should not be null or empty";
         String[] parts = trimmed.split(" ");
+        assert parts.length > 0 : "Split input should have at least one part";
         String head = parts[0];
+        assert head != null && !head.isEmpty() : "Command head should not be null or empty";
         switch (head) {
             case "bye":
                 return new ExitCommand();
