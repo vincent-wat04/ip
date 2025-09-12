@@ -104,7 +104,7 @@ public class TaskList {
      * @param keyword search keyword
      * @return matching task lines
      */
-    public List<String> find(String keyword) {
+    public List<String> findTasks(String keyword) {
         String key = keyword == null ? "" : keyword.trim().toLowerCase();
         List<String> lines = new ArrayList<String>();
         if (key.isEmpty()) {
