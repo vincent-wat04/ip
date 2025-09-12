@@ -17,7 +17,7 @@ public class FindCommand extends Command {
 
     @Override
     public void execute(TaskList tasks, Ui ui) throws VinceException {
-        List<String> lines = tasks.find(keyword);
+        List<String> lines = tasks.findTasks(keyword);
         ui.showTaskList(lines);
     }
 
