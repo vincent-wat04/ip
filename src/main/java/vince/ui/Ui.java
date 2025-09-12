@@ -9,6 +9,14 @@ import vince.task.Task;
  * and formatting lists for display. Keeps I/O concerns isolated from logic.
  */
 public class Ui {
+    // Constants for UI messages
+    private static final String WELCOME_MESSAGE = "Hello I'm Vince";
+    private static final String HELP_MESSAGE = "What can I do for you?";
+    private static final String GOODBYE_MESSAGE = "Bye. Hope to see you again soon!";
+    private static final String EMPTY_COMMAND_ERROR = "Oops! The command cannot be empty!";
+    private static final String INVALID_COMMAND_ERROR = "Oops! It's an invalid command :-(";
+    private static final String DIVIDER_LINE = "____________________________________________________________";
+    
     private Scanner scanner;
     
     /**
@@ -21,8 +29,8 @@ public class Ui {
     /** Prints the welcome banner. */
     public void showWelcome() {
         showLine();
-        System.out.println("Hello I'm Vince");
-        System.out.println("What can I do for you?");
+        System.out.println(WELCOME_MESSAGE);
+        System.out.println(HELP_MESSAGE);
         System.out.println();
         showLine();
         System.out.println();
@@ -31,7 +39,7 @@ public class Ui {
     /** Prints the goodbye banner and trailing divider. */
     public void showGoodbye() {
         showLine();
-        System.out.println("Bye. Hope to see you again soon!");
+        System.out.println(GOODBYE_MESSAGE);
         System.out.println();
         showLine();
         System.out.println();
@@ -51,7 +59,7 @@ public class Ui {
     
     /** Prints a horizontal divider line. */
     public void showLine() {
-        System.out.println("____________________________________________________________");
+        System.out.println(DIVIDER_LINE);
     }
     
     /**
@@ -68,7 +76,7 @@ public class Ui {
     /** Prints an error for empty commands. */
     public void showEmptyCommandError() {
         showLine();
-        System.out.println("Oops! The command cannot be empty!");
+        System.out.println(EMPTY_COMMAND_ERROR);
         showLine();
         System.out.println();
     }
@@ -76,7 +84,7 @@ public class Ui {
     /** Prints an error for unknown commands. */
     public void showInvalidCommandError() {
         showLine();
-        System.out.println("Oops! It's an invalid command :-(");
+        System.out.println(INVALID_COMMAND_ERROR);
         showLine();
         System.out.println();
     }
