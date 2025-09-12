@@ -18,4 +18,8 @@ public class UnmarkCommand extends Command {
         tasks.unmark(index);
         ui.showTaskUnmarked(task);
     }
+
+    public String getIndex() {
+        return index;
+    }
 }

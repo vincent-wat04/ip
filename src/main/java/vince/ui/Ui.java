@@ -42,7 +42,11 @@ public class Ui {
      * @return the raw command string
      */
     public String readCommand() {
-        return scanner.nextLine();
+        if (scanner.hasNextLine()) {
+            return scanner.nextLine();
+        } else {
+            return null;
+        }
     }
     
     /** Prints a horizontal divider line. */
