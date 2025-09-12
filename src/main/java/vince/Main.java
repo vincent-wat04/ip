@@ -19,6 +19,7 @@ import vince.command.Command;
 import vince.util.Parser;
 import vince.exception.VinceException;
 import vince.task.Task;
+import java.util.stream.Collectors;
 
 /**
  * Main class for the JavaFX GUI application.
@@ -172,9 +173,7 @@ public class Main extends Application {
                     response.append("Your task list is empty!");
                 } else {
                     response.append("Here are the tasks in your list:\n");
-                    for (String line : lines) {
-                        response.append(line).append("\n");
-                    }
+                    response.append(lines.stream().collect(Collectors.joining("\n")));
                 }
             } else if (command instanceof vince.command.AddCommand) {
                 var addCommand = (vince.command.AddCommand) command;
@@ -207,9 +206,7 @@ public class Main extends Application {
                     response.append("No tasks found matching '").append(findCommand.getKeyword()).append("'.");
                 } else {
                     response.append("Here are the matching tasks in your list:\n");
-                    for (String line : lines) {
-                        response.append(line).append("\n");
-                    }
+                    response.append(lines.stream().collect(Collectors.joining("\n")));
                 }
             } else if (command instanceof vince.command.OnDateCommand) {
                 var onDateCommand = (vince.command.OnDateCommand) command;
@@ -219,9 +216,7 @@ public class Main extends Application {
                     response.append("No tasks found on ").append(dateLabel).append(".");
                 } else {
                     response.append("Tasks on ").append(dateLabel).append(":\n");
-                    for (String line : lines) {
-                        response.append(line).append("\n");
-                    }
+                    response.append(lines.stream().collect(Collectors.joining("\n")));
                 }
             }
 
