@@ -204,6 +204,8 @@ public class Main extends Application {
             return handleFindCommand((vince.command.FindCommand) command);
         } else if (command instanceof vince.command.OnDateCommand) {
             return handleOnDateCommand((vince.command.OnDateCommand) command);
+        } else if (command instanceof vince.command.ScheduleCommand) {
+            return handleScheduleCommand((vince.command.ScheduleCommand) command);
         }
         
         return "Unknown command type";
@@ -320,6 +322,23 @@ public class Main extends Application {
         
         StringBuilder response = new StringBuilder(String.format("Tasks on %s:\n", dateLabel));
         for (String line : taskLines) {
+            response.append(line).append("\n");
+        }
+        return response.toString().trim();
+    }
+
+    /**
+     * Handles the schedule command by showing a timeline view of tasks on a specific date.
+     * 
+     * @param scheduleCommand the schedule command with date string
+     * @return formatted schedule with timeline or no results message
+     */
+    private String handleScheduleCommand(vince.command.ScheduleCommand scheduleCommand) {
+        var scheduleLines = tasks.getScheduleForDate(scheduleCommand.getDateStr());
+        String dateLabel = tasks.tasksOnDateLabel(scheduleCommand.getDateStr());
+        
+        StringBuilder response = new StringBuilder(String.format("📅 Schedule for %s:\n\n", dateLabel));
+        for (String line : scheduleLines) {
             response.append(line).append("\n");
         }
         return response.toString().trim();

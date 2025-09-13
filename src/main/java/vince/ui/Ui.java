@@ -181,6 +181,22 @@ public class Ui {
         showLine();
         System.out.println();
     }
+
+    /**
+     * Displays a schedule view for tasks on a specific date.
+     * @param dateLabel formatted date label (e.g., "Dec 15 2024")
+     * @param scheduleLines list of schedule lines with timeline
+     */
+    public void showSchedule(String dateLabel, List<String> scheduleLines) {
+        showLine();
+        System.out.println("📅 Schedule for " + dateLabel + ":");
+        System.out.println();
+        for (String line : scheduleLines) {
+            System.out.println(line);
+        }
+        showLine();
+        System.out.println();
+    }
     
     /** Closes the scanner backing this UI. */
     public void close() {

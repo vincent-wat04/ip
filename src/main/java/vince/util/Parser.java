@@ -9,6 +9,7 @@ import vince.command.DeleteCommand;
 import vince.command.OnDateCommand;
 import vince.command.AddCommand;
 import vince.command.FindCommand;
+import vince.command.ScheduleCommand;
 import vince.exception.VinceException;
 
 /**
@@ -49,6 +50,10 @@ public class Parser {
             case "on": {
                 String dateStr = trimmed.length() > 3 ? trimmed.substring(3).trim() : "";
                 return new OnDateCommand(dateStr);
+            }
+            case "schedule": {
+                String dateStr = trimmed.length() > 9 ? trimmed.substring(9).trim() : "";
+                return new ScheduleCommand(dateStr);
             }
             case "todo":
             case "deadline":
