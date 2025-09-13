@@ -2,7 +2,9 @@ package vince.storage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -254,6 +256,125 @@ public class TaskList {
     public String tasksOnDateLabel(String dateStr) {
         LocalDate targetDate = DateTimeParser.parseDateTime(dateStr).toLocalDate();
         return DateTimeParser.formatDate(targetDate.atStartOfDay());
+    }
+
+    /**
+     * Generates a schedule view for tasks on a specific date.
+     * Tasks are organized by time with a timeline format.
+     * 
+     * @param dateStr date string accepted by {@link DateTimeParser}
+     * @return formatted schedule lines with timeline
+     * @throws VinceException if the date string is invalid
+     */
+    public List<String> getScheduleForDate(String dateStr) throws VinceException {
+        LocalDate targetDate = DateTimeParser.parseDateTime(dateStr).toLocalDate();
+        
+        // Get all tasks that occur on this date
+        List<TaskWithTime> tasksWithTime = IntStream.range(0, tasks.size())
+                .filter(i -> isTaskOnDate(tasks.get(i), targetDate))
+                .mapToObj(i -> new TaskWithTime(tasks.get(i), i + 1, targetDate))
+                .sorted(Comparator.comparing(TaskWithTime::getTime))
+                .collect(Collectors.toList());
+        
+        if (tasksWithTime.isEmpty()) {
+            return List.of("No tasks scheduled for this date.");
+        }
+        
+        List<String> scheduleLines = new ArrayList<>();
+        scheduleLines.add("📅 Daily Schedule:");
+        scheduleLines.add("");
+        
+        LocalTime currentTime = LocalTime.MIDNIGHT;
+        boolean hasAllDayTasks = false;
+        
+        // First, add all-day tasks
+        for (TaskWithTime taskWithTime : tasksWithTime) {
+            if (taskWithTime.isAllDay()) {
+                if (!hasAllDayTasks) {
+                    scheduleLines.add("🌅 All Day:");
+                    hasAllDayTasks = true;
+                }
+                scheduleLines.add("  • " + taskWithTime.getTask().toString());
+            }
+        }
+        
+        // Then add timed tasks
+        for (TaskWithTime taskWithTime : tasksWithTime) {
+            if (!taskWithTime.isAllDay()) {
+                LocalTime taskTime = taskWithTime.getTime();
+                
+                // Add time gap if there's a significant gap
+                if (currentTime != LocalTime.MIDNIGHT && 
+                    taskTime.isAfter(currentTime.plusHours(1))) {
+                    scheduleLines.add("");
+                }
+                
+                // Add time header
+                String timeHeader = String.format("🕐 %s:", 
+                    taskTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
+                scheduleLines.add(timeHeader);
+                
+                // Add task details
+                String taskDetails = "  • " + taskWithTime.getTask().toString();
+                if (taskWithTime.getTask() instanceof Event) {
+                    Event event = (Event) taskWithTime.getTask();
+                    LocalTime endTime = event.getTo().toLocalTime();
+                    taskDetails += String.format(" (until %s)", 
+                        endTime.format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")));
+                }
+                scheduleLines.add(taskDetails);
+                
+                currentTime = taskTime;
+            }
+        }
+        
+        return scheduleLines;
+    }
+
+    /**
+     * Helper class to represent a task with its associated time for scheduling.
+     */
+    private static class TaskWithTime {
+        private final Task task;
+        private final int index;
+        private final LocalTime time;
+        private final boolean isAllDay;
+
+        public TaskWithTime(Task task, int index, LocalDate targetDate) {
+            this.task = task;
+            this.index = index;
+            
+            if (task instanceof Deadline) {
+                Deadline deadline = (Deadline) task;
+                this.time = deadline.getBy().toLocalTime();
+                this.isAllDay = this.time.equals(LocalTime.MIDNIGHT);
+            } else if (task instanceof Event) {
+                Event event = (Event) task;
+                this.time = event.getFrom().toLocalTime();
+                this.isAllDay = this.time.equals(LocalTime.MIDNIGHT) && 
+                               event.getTo().toLocalTime().equals(LocalTime.MIDNIGHT);
+            } else {
+                // Todo tasks are treated as all-day
+                this.time = LocalTime.MIDNIGHT;
+                this.isAllDay = true;
+            }
+        }
+
+        public Task getTask() {
+            return task;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public LocalTime getTime() {
+            return time;
+        }
+
+        public boolean isAllDay() {
+            return isAllDay;
+        }
     }
 
     /**
