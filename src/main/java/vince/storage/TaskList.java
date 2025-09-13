@@ -21,6 +21,12 @@ import vince.exception.VinceException;
  * (mark/unmark/delete).
  */
 public class TaskList {
+    // Constants for task parsing
+    private static final String DEADLINE_SEPARATOR = " /by ";
+    private static final String EVENT_FROM_SEPARATOR = " /from ";
+    private static final String EVENT_TO_SEPARATOR = " /to ";
+    private static final String EVENT_SEPARATOR_PATTERN = " /from | /to ";
+    
     private final Storage storage;
     private ArrayList<Task> tasks = new ArrayList<Task>();
 
@@ -42,38 +48,119 @@ public class TaskList {
      * @throws VinceException if the input format is invalid
      */
     public Task addTask(String input) throws VinceException {
-        String type = input.split(" ")[0];
-        TaskType taskType = TaskType.fromCommand(type);
+        String commandType = extractCommandType(input);
+        TaskType taskType = TaskType.fromCommand(commandType);
+        
         if (taskType == null) {
-            tasks.add(new Task(input));
-            storage.save(tasks);
-            return tasks.get(tasks.size() - 1);
+            return addGenericTask(input);
         }
+        
+        Task newTask = createTaskByType(input, taskType);
+        tasks.add(newTask);
+        storage.save(tasks);
+        return newTask;
+    }
+
+    /**
+     * Extracts the command type from the input string.
+     * 
+     * @param input the raw input string
+     * @return the first word which represents the command type
+     */
+    private String extractCommandType(String input) {
+        return input.split(" ")[0];
+    }
+
+    /**
+     * Adds a generic task when no specific task type is recognized.
+     * 
+     * @param input the raw input string
+     * @return the newly created generic task
+     */
+    private Task addGenericTask(String input) {
+        Task newTask = new Task(input);
+        tasks.add(newTask);
+        storage.save(tasks);
+        return newTask;
+    }
+
+    /**
+     * Creates a task based on the specified task type.
+     * 
+     * @param input the raw input string
+     * @param taskType the type of task to create
+     * @return the newly created task
+     * @throws VinceException if the input format is invalid for the task type
+     */
+    private Task createTaskByType(String input, TaskType taskType) throws VinceException {
         switch (taskType) {
             case DEADLINE:
-                if (!input.contains(" /by ")) {
-                    throw new VinceException("Deadline task must contain ' /by ' to specify the deadline!");
-                }
-                String[] deadlineParts = input.split(" /by ");
-                tasks.add(new Deadline(deadlineParts[0].substring(taskType.getPrefixLength()), deadlineParts[1]));
-                break;
+                return createDeadlineTask(input, taskType);
             case EVENT:
-                if (!input.contains(" /from ") || !input.contains(" /to ")) {
-                    throw new VinceException(
-                            "Event task must contain ' /from ' and ' /to ' to specify the event time!");
-                }
-                String[] eventParts = input.split(" /from | /to ");
-                tasks.add(new Event(eventParts[0].substring(taskType.getPrefixLength()), eventParts[1], eventParts[2]));
-                break;
+                return createEventTask(input, taskType);
             case TODO:
-                if (input.length() < taskType.getPrefixLength()) {
-                    throw new VinceException("Todo task must start with 'todo ' and have a description!");
-                }
-                tasks.add(new Todo(input.substring(taskType.getPrefixLength())));
-                break;
+                return createTodoTask(input, taskType);
+            default:
+                throw new VinceException("Unknown task type: " + taskType);
         }
-        storage.save(tasks);
-        return tasks.get(tasks.size() - 1);
+    }
+
+    /**
+     * Creates a deadline task from the input string.
+     * 
+     * @param input the raw input string
+     * @param taskType the task type (should be DEADLINE)
+     * @return the newly created deadline task
+     * @throws VinceException if the input format is invalid
+     */
+    private Task createDeadlineTask(String input, TaskType taskType) throws VinceException {
+        if (!input.contains(DEADLINE_SEPARATOR)) {
+            throw new VinceException("Deadline task must contain ' /by ' to specify the deadline!");
+        }
+        
+        String[] deadlineParts = input.split(DEADLINE_SEPARATOR);
+        String description = deadlineParts[0].substring(taskType.getPrefixLength());
+        String deadline = deadlineParts[1];
+        
+        return new Deadline(description, deadline);
+    }
+
+    /**
+     * Creates an event task from the input string.
+     * 
+     * @param input the raw input string
+     * @param taskType the task type (should be EVENT)
+     * @return the newly created event task
+     * @throws VinceException if the input format is invalid
+     */
+    private Task createEventTask(String input, TaskType taskType) throws VinceException {
+        if (!input.contains(EVENT_FROM_SEPARATOR) || !input.contains(EVENT_TO_SEPARATOR)) {
+            throw new VinceException("Event task must contain ' /from ' and ' /to ' to specify the event time!");
+        }
+        
+        String[] eventParts = input.split(EVENT_SEPARATOR_PATTERN);
+        String description = eventParts[0].substring(taskType.getPrefixLength());
+        String startTime = eventParts[1];
+        String endTime = eventParts[2];
+        
+        return new Event(description, startTime, endTime);
+    }
+
+    /**
+     * Creates a todo task from the input string.
+     * 
+     * @param input the raw input string
+     * @param taskType the task type (should be TODO)
+     * @return the newly created todo task
+     * @throws VinceException if the input format is invalid
+     */
+    private Task createTodoTask(String input, TaskType taskType) throws VinceException {
+        if (input.length() < taskType.getPrefixLength()) {
+            throw new VinceException("Todo task must start with 'todo ' and have a description!");
+        }
+        
+        String description = input.substring(taskType.getPrefixLength());
+        return new Todo(description);
     }
 
     /**

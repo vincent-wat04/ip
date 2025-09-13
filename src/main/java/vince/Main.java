@@ -147,11 +147,14 @@ public class Main extends Application {
     }
 
     /**
-     * You should have your own function to generate a response to user input.
-     * Replace this stub with your completed method.
+     * Generates a response to user input by parsing and executing the command.
+     * This method handles the GUI-specific response generation for all command types.
+     * 
+     * @param input the raw user input string
+     * @return formatted response string for display in GUI
      */
     private String getResponse(String input) {
-        if (input == null || input.trim().isEmpty()) {
+        if (isInputEmpty(input)) {
             return "Oops! The command cannot be empty!";
         }
 
@@ -161,70 +164,165 @@ public class Main extends Application {
                 return "Oops! It's an invalid command :-(";
             }
 
-            // Create a simple string-based response system for GUI
-            StringBuilder response = new StringBuilder();
-
-            if (command instanceof vince.command.ExitCommand) {
-                Platform.exit();
-                return "Bye. Hope to see you again soon!";
-            } else if (command instanceof vince.command.ListCommand) {
-                var lines = tasks.list();
-                if (lines.isEmpty()) {
-                    response.append("Your task list is empty!");
-                } else {
-                    response.append("Here are the tasks in your list:\n");
-                    response.append(lines.stream().collect(Collectors.joining("\n")));
-                }
-            } else if (command instanceof vince.command.AddCommand) {
-                var addCommand = (vince.command.AddCommand) command;
-                Task newTask = tasks.addTask(addCommand.getInput());
-                response.append("Got it. I've added this task:\n");
-                response.append(newTask).append("\n");
-                response.append("Now you have ").append(tasks.size()).append(" tasks in the list.");
-            } else if (command instanceof vince.command.MarkCommand) {
-                var markCommand = (vince.command.MarkCommand) command;
-                tasks.mark(markCommand.getIndex());
-                Task task = tasks.get(markCommand.getIndex());
-                response.append("Nice! I've marked this task as done:\n");
-                response.append(task);
-            } else if (command instanceof vince.command.UnmarkCommand) {
-                var unmarkCommand = (vince.command.UnmarkCommand) command;
-                tasks.unmark(unmarkCommand.getIndex());
-                Task task = tasks.get(unmarkCommand.getIndex());
-                response.append("OK, I've marked this task as not done yet:\n");
-                response.append(task);
-            } else if (command instanceof vince.command.DeleteCommand) {
-                var deleteCommand = (vince.command.DeleteCommand) command;
-                Task deletedTask = tasks.delete(deleteCommand.getIndex());
-                response.append("Noted. I've removed this task:\n");
-                response.append(deletedTask).append("\n");
-                response.append("Now you have ").append(tasks.size()).append(" tasks in the list.");
-            } else if (command instanceof vince.command.FindCommand) {
-                var findCommand = (vince.command.FindCommand) command;
-                var lines = tasks.findTasks(findCommand.getKeyword());
-                if (lines.isEmpty()) {
-                    response.append("No tasks found matching '").append(findCommand.getKeyword()).append("'.");
-                } else {
-                    response.append("Here are the matching tasks in your list:\n");
-                    response.append(lines.stream().collect(Collectors.joining("\n")));
-                }
-            } else if (command instanceof vince.command.OnDateCommand) {
-                var onDateCommand = (vince.command.OnDateCommand) command;
-                var lines = tasks.tasksOnDateLines(onDateCommand.getDateStr());
-                String dateLabel = tasks.tasksOnDateLabel(onDateCommand.getDateStr());
-                if (lines.isEmpty()) {
-                    response.append("No tasks found on ").append(dateLabel).append(".");
-                } else {
-                    response.append("Tasks on ").append(dateLabel).append(":\n");
-                    response.append(lines.stream().collect(Collectors.joining("\n")));
-                }
-            }
-
-            return response.toString().trim();
+            return executeCommandAndGetResponse(command);
 
         } catch (VinceException e) {
             return "Oops! " + e.getMessage();
         }
+    }
+
+    /**
+     * Checks if the input string is null or empty after trimming.
+     * 
+     * @param input the input string to check
+     * @return true if input is null or empty, false otherwise
+     */
+    private boolean isInputEmpty(String input) {
+        return input == null || input.trim().isEmpty();
+    }
+
+    /**
+     * Executes the given command and returns the appropriate response string.
+     * 
+     * @param command the parsed command to execute
+     * @return response string for the executed command
+     */
+    private String executeCommandAndGetResponse(Command command) {
+        if (command instanceof vince.command.ExitCommand) {
+            return handleExitCommand();
+        } else if (command instanceof vince.command.ListCommand) {
+            return handleListCommand();
+        } else if (command instanceof vince.command.AddCommand) {
+            return handleAddCommand((vince.command.AddCommand) command);
+        } else if (command instanceof vince.command.MarkCommand) {
+            return handleMarkCommand((vince.command.MarkCommand) command);
+        } else if (command instanceof vince.command.UnmarkCommand) {
+            return handleUnmarkCommand((vince.command.UnmarkCommand) command);
+        } else if (command instanceof vince.command.DeleteCommand) {
+            return handleDeleteCommand((vince.command.DeleteCommand) command);
+        } else if (command instanceof vince.command.FindCommand) {
+            return handleFindCommand((vince.command.FindCommand) command);
+        } else if (command instanceof vince.command.OnDateCommand) {
+            return handleOnDateCommand((vince.command.OnDateCommand) command);
+        }
+        
+        return "Unknown command type";
+    }
+
+    /**
+     * Handles the exit command by terminating the application.
+     * 
+     * @return goodbye message
+     */
+    private String handleExitCommand() {
+        Platform.exit();
+        return "Bye. Hope to see you again soon!";
+    }
+
+    /**
+     * Handles the list command by displaying all tasks.
+     * 
+     * @return formatted list of tasks or empty message
+     */
+    private String handleListCommand() {
+        var taskLines = tasks.list();
+        if (taskLines.isEmpty()) {
+            return "Your task list is empty!";
+        }
+        
+        StringBuilder response = new StringBuilder("Here are the tasks in your list:\n");
+        for (String line : taskLines) {
+            response.append(line).append("\n");
+        }
+        return response.toString().trim();
+    }
+
+    /**
+     * Handles the add command by creating a new task.
+     * 
+     * @param addCommand the add command containing task details
+     * @return confirmation message with task details
+     */
+    private String handleAddCommand(vince.command.AddCommand addCommand) {
+        Task newTask = tasks.addTask(addCommand.getInput());
+        return String.format("Got it. I've added this task:\n%s\nNow you have %d tasks in the list.", 
+                           newTask, tasks.size());
+    }
+
+    /**
+     * Handles the mark command by marking a task as done.
+     * 
+     * @param markCommand the mark command with task index
+     * @return confirmation message with marked task
+     */
+    private String handleMarkCommand(vince.command.MarkCommand markCommand) {
+        tasks.mark(markCommand.getIndex());
+        Task markedTask = tasks.get(markCommand.getIndex());
+        return String.format("Nice! I've marked this task as done:\n%s", markedTask);
+    }
+
+    /**
+     * Handles the unmark command by marking a task as not done.
+     * 
+     * @param unmarkCommand the unmark command with task index
+     * @return confirmation message with unmarked task
+     */
+    private String handleUnmarkCommand(vince.command.UnmarkCommand unmarkCommand) {
+        tasks.unmark(unmarkCommand.getIndex());
+        Task unmarkedTask = tasks.get(unmarkCommand.getIndex());
+        return String.format("OK, I've marked this task as not done yet:\n%s", unmarkedTask);
+    }
+
+    /**
+     * Handles the delete command by removing a task.
+     * 
+     * @param deleteCommand the delete command with task index
+     * @return confirmation message with deleted task
+     */
+    private String handleDeleteCommand(vince.command.DeleteCommand deleteCommand) {
+        Task deletedTask = tasks.delete(deleteCommand.getIndex());
+        return String.format("Noted. I've removed this task:\n%s\nNow you have %d tasks in the list.", 
+                           deletedTask, tasks.size());
+    }
+
+    /**
+     * Handles the find command by searching for tasks with matching keywords.
+     * 
+     * @param findCommand the find command with search keyword
+     * @return formatted list of matching tasks or no results message
+     */
+    private String handleFindCommand(vince.command.FindCommand findCommand) {
+        var matchingLines = tasks.findTasks(findCommand.getKeyword());
+        if (matchingLines.isEmpty()) {
+            return String.format("No tasks found matching '%s'.", findCommand.getKeyword());
+        }
+        
+        StringBuilder response = new StringBuilder("Here are the matching tasks in your list:\n");
+        for (String line : matchingLines) {
+            response.append(line).append("\n");
+        }
+        return response.toString().trim();
+    }
+
+    /**
+     * Handles the on date command by showing tasks on a specific date.
+     * 
+     * @param onDateCommand the on date command with date string
+     * @return formatted list of tasks on the date or no results message
+     */
+    private String handleOnDateCommand(vince.command.OnDateCommand onDateCommand) {
+        var taskLines = tasks.tasksOnDateLines(onDateCommand.getDateStr());
+        String dateLabel = tasks.tasksOnDateLabel(onDateCommand.getDateStr());
+        
+        if (taskLines.isEmpty()) {
+            return String.format("No tasks found on %s.", dateLabel);
+        }
+        
+        StringBuilder response = new StringBuilder(String.format("Tasks on %s:\n", dateLabel));
+        for (String line : taskLines) {
+            response.append(line).append("\n");
+        }
+        return response.toString().trim();
     }
 
     /**
