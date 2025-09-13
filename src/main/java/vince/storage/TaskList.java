@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import vince.task.Task;
 import vince.task.Todo;
 import vince.task.Deadline;
@@ -172,43 +174,41 @@ public class TaskList {
 
     /**
      * Builds preformatted numbered lines for all tasks in this list.
+     * Uses Java Streams for functional programming approach.
      * 
      * @return list of lines ready for display
      */
     public List<String> list() {
-        List<String> lines = new ArrayList<String>();
-        for (int i = 0; i < tasks.size(); i++) {
-            lines.add((i + 1) + ". " + tasks.get(i));
-        }
-        return lines;
+        return IntStream.range(0, tasks.size())
+                .mapToObj(i -> (i + 1) + ". " + tasks.get(i))
+                .collect(Collectors.toList());
     }
 
     /**
      * Builds preformatted numbered lines for tasks whose description contains the
      * keyword.
      * Matching is case-insensitive and ignores leading/trailing spaces in keyword.
+     * Uses Java Streams for functional programming approach.
      * 
      * @param keyword search keyword
      * @return matching task lines
      */
     public List<String> findTasks(String keyword) {
         String key = keyword == null ? "" : keyword.trim().toLowerCase();
-        List<String> lines = new ArrayList<String>();
         if (key.isEmpty()) {
-            return lines;
+            return new ArrayList<>();
         }
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            if (task.getDescription().toLowerCase().contains(key)) {
-                lines.add((i + 1) + ". " + task);
-            }
-        }
-        return lines;
+        
+        return IntStream.range(0, tasks.size())
+                .filter(i -> tasks.get(i).getDescription().toLowerCase().contains(key))
+                .mapToObj(i -> (i + 1) + ". " + tasks.get(i))
+                .collect(Collectors.toList());
     }
 
     /**
      * Builds preformatted numbered lines for tasks that occur on the given date.
      * Deadlines are matched by their date; events by spanning the date range.
+     * Uses Java Streams for functional programming approach.
      * 
      * @param dateStr date string accepted by {@link DateTimeParser}
      * @return lines for tasks matching that date
@@ -216,24 +216,33 @@ public class TaskList {
      */
     public List<String> tasksOnDateLines(String dateStr) throws VinceException {
         LocalDate targetDate = DateTimeParser.parseDateTime(dateStr).toLocalDate();
-        List<String> lines = new ArrayList<String>();
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            if (task instanceof Deadline) {
-                LocalDateTime taskDate = ((Deadline) task).getBy();
-                if (taskDate.toLocalDate().equals(targetDate)) {
-                    lines.add((i + 1) + ". " + task);
-                }
-            } else if (task instanceof Event) {
-                Event event = (Event) task;
-                LocalDate eventStartDate = event.getFrom().toLocalDate();
-                LocalDate eventEndDate = event.getTo().toLocalDate();
-                if (!targetDate.isBefore(eventStartDate) && !targetDate.isAfter(eventEndDate)) {
-                    lines.add((i + 1) + ". " + task);
-                }
-            }
+        
+        return IntStream.range(0, tasks.size())
+                .filter(i -> isTaskOnDate(tasks.get(i), targetDate))
+                .mapToObj(i -> (i + 1) + ". " + tasks.get(i))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Checks if a task occurs on the given date.
+     * Deadlines match if their date equals the target date.
+     * Events match if the target date falls within their date range.
+     * 
+     * @param task the task to check
+     * @param targetDate the date to match against
+     * @return true if the task occurs on the target date
+     */
+    private boolean isTaskOnDate(Task task, LocalDate targetDate) {
+        if (task instanceof Deadline) {
+            LocalDateTime taskDate = ((Deadline) task).getBy();
+            return taskDate.toLocalDate().equals(targetDate);
+        } else if (task instanceof Event) {
+            Event event = (Event) task;
+            LocalDate eventStartDate = event.getFrom().toLocalDate();
+            LocalDate eventEndDate = event.getTo().toLocalDate();
+            return !targetDate.isBefore(eventStartDate) && !targetDate.isAfter(eventEndDate);
         }
-        return lines;
+        return false;
     }
 
     /**

@@ -19,6 +19,7 @@ import vince.command.Command;
 import vince.util.Parser;
 import vince.exception.VinceException;
 import vince.task.Task;
+import java.util.stream.Collectors;
 
 /**
  * Main class for the JavaFX GUI application.
