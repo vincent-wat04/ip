@@ -8,8 +8,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.stage.Stage;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -60,6 +63,8 @@ public class Main extends Application {
         // The container for the content of the chat to scroll.
         scrollPane = new ScrollPane();
         dialogContainer = new VBox();
+        dialogContainer.setSpacing(5.0); // Add spacing between dialog boxes
+        dialogContainer.setPadding(new Insets(10.0)); // Add padding around content
         scrollPane.setContent(dialogContainer);
 
         userInput = new TextField();
@@ -73,35 +78,45 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
 
-        // Step 2. Formatting the window to look as expected
-        stage.setTitle("Vince");
-        stage.setResizable(false);
-        stage.setMinHeight(600.0);
-        stage.setMinWidth(400.0);
+        // Step 2. Formatting the window to look as expected with responsive design
+        stage.setTitle("Vince AI Assistant");
+        stage.setResizable(true);  // Enable window resizing
+        stage.setMinHeight(400.0); // Set reasonable minimum size
+        stage.setMinWidth(350.0);
+        stage.setMaxHeight(1000.0); // Set maximum size to prevent excessive stretching
+        stage.setMaxWidth(800.0);
 
-        mainLayout.setPrefSize(400.0, 600.0);
+        // Use responsive sizing instead of fixed sizes
+        mainLayout.setPrefSize(450.0, 650.0);
 
-        scrollPane.setPrefSize(385, 535);
+        // Make scrollPane responsive - remove fixed size
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
 
         scrollPane.setVvalue(1.0);
         scrollPane.setFitToWidth(true);
 
         // You will need to import `javafx.scene.layout.Region` for this.
         dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
+        dialogContainer.setMaxHeight(Region.USE_PREF_SIZE);
 
-        userInput.setPrefWidth(325.0);
+        // Make input field responsive
+        userInput.setPrefWidth(Region.USE_COMPUTED_SIZE);
+        sendButton.setPrefWidth(80.0);
 
-        sendButton.setPrefWidth(55.0);
+        // Set up responsive anchoring for scrollPane
+        AnchorPane.setTopAnchor(scrollPane, 10.0);
+        AnchorPane.setLeftAnchor(scrollPane, 10.0);
+        AnchorPane.setRightAnchor(scrollPane, 10.0);
+        AnchorPane.setBottomAnchor(scrollPane, 60.0); // Leave space for input area
 
-        AnchorPane.setTopAnchor(scrollPane, 1.0);
+        // Position input controls at bottom with responsive width
+        AnchorPane.setBottomAnchor(sendButton, 10.0);
+        AnchorPane.setRightAnchor(sendButton, 10.0);
 
-        AnchorPane.setBottomAnchor(sendButton, 1.0);
-        AnchorPane.setRightAnchor(sendButton, 1.0);
-
-        AnchorPane.setBottomAnchor(userInput, 1.0);
-        AnchorPane.setLeftAnchor(userInput, 1.0);
+        AnchorPane.setBottomAnchor(userInput, 10.0);
+        AnchorPane.setLeftAnchor(userInput, 10.0);
+        AnchorPane.setRightAnchor(userInput, 100.0); // Leave space for send button
 
         // Step 3. Add functionality to handle user input.
         sendButton.setOnMouseClicked((event) -> {
@@ -141,9 +156,19 @@ public class Main extends Application {
     private void handleUserInput() {
         Label userText = new Label(userInput.getText());
         Label vinceText = new Label(getResponse(userInput.getText()));
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(userText, new ImageView(user)),
-                DialogBox.getVinceDialog(vinceText, new ImageView(vince)));
+        
+        // Create dialog boxes
+        DialogBox userDialog = DialogBox.getUserDialog(userText, new ImageView(user));
+        DialogBox vinceDialog = DialogBox.getVinceDialog(vinceText, new ImageView(vince));
+        
+        // Create containers for proper alignment
+        VBox userContainer = new VBox(userDialog);
+        userContainer.setAlignment(Pos.CENTER_RIGHT);
+        
+        VBox vinceContainer = new VBox(vinceDialog);
+        vinceContainer.setAlignment(Pos.CENTER_LEFT);
+        
+        dialogContainer.getChildren().addAll(userContainer, vinceContainer);
         userInput.clear();
     }
 
