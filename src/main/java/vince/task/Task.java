@@ -3,14 +3,15 @@ package vince.task;
 import vince.exception.VinceException;
 
 /**
- * Represents a user task with a description and completion state.
+ * Represents a user task with description, completion state, and AI-enhanced priority.
  */
 public class Task {
-    private String description;
-    private boolean isDone;
+    protected String description;
+    protected boolean isDone;
+    protected Priority priority;
 
     /**
-     * Constructs a task with the given description.
+     * Constructs a task with the given description and auto-suggested priority.
      * @param description non-empty description string
      * @throws VinceException if the description is null or blank
      */
@@ -20,8 +21,28 @@ public class Task {
         }
         this.description = description.trim();
         this.isDone = false;
+        this.priority = Priority.suggestPriority(this.description);
         assert this.description != null && !this.description.isEmpty() : "Description should not be null or empty after construction";
         assert !this.isDone : "New task should not be marked as done initially";
+        assert this.priority != null : "Priority should be assigned";
+    }
+    
+    /**
+     * Constructs a task with specified description and priority.
+     * @param description non-empty description string
+     * @param priority the task priority
+     * @throws VinceException if the description is null or blank
+     */
+    public Task(String description, Priority priority) throws VinceException {
+        if (description == null || description.trim().isEmpty()) {
+            throw new VinceException("Task description cannot be null or empty!");
+        }
+        this.description = description.trim();
+        this.isDone = false;
+        this.priority = priority != null ? priority : Priority.NONE;
+        assert this.description != null && !this.description.isEmpty() : "Description should not be null or empty after construction";
+        assert !this.isDone : "New task should not be marked as done initially";
+        assert this.priority != null : "Priority should be assigned";
     }
 
     /** Marks the task as done. */
@@ -53,11 +74,30 @@ public class Task {
     public String getDescription() {
         return description;
     }
+    
+    /**
+     * Returns the task priority.
+     * @return priority level
+     */
+    public Priority getPriority() {
+        return priority;
+    }
+    
+    /**
+     * Sets the task priority.
+     * @param priority the new priority level
+     */
+    public void setPriority(Priority priority) {
+        this.priority = priority != null ? priority : Priority.NONE;
+        assert this.priority != null : "Priority should not be null after setting";
+    }
 
     /**
-     * Returns a string with the completion indicator and description.
+     * Returns a string with priority, completion indicator and description.
      */
     public String toString() {
-        return (isDone ? "[X] " : "[ ] ") + description;
+        String statusIcon = isDone ? "[X] " : "[ ] ";
+        String priorityIcon = priority != Priority.NONE ? priority.getEmoji() + " " : "";
+        return priorityIcon + statusIcon + description;
     }
 }

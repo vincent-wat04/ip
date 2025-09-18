@@ -198,6 +198,57 @@ public class Ui {
         System.out.println();
     }
     
+    /**
+     * Shows AI-enhanced help with command examples and tips.
+     */
+    public void showHelp() {
+        showLine();
+        System.out.println("🤖 Vince AI Assistant - Available Commands:");
+        System.out.println();
+        System.out.println("📝 Task Management:");
+        System.out.println("  • todo <description> - Add a simple task");
+        System.out.println("  • deadline <description> /by <date> - Add a task with deadline");
+        System.out.println("  • event <description> /from <start> /to <end> - Add a scheduled event");
+        System.out.println();
+        System.out.println("📋 Task Operations:");
+        System.out.println("  • list - Show all tasks");
+        System.out.println("  • mark <number> - Mark task as completed");
+        System.out.println("  • unmark <number> - Mark task as incomplete");
+        System.out.println("  • delete <number> - Remove a task");
+        System.out.println();
+        System.out.println("🔍 Smart Features:");
+        System.out.println("  • find <keyword> - Search tasks by keyword");
+        System.out.println("  • schedule <date> - View timeline for a specific date");
+        System.out.println("  • on <date> - List tasks on a specific date");
+        System.out.println();
+        System.out.println("🧠 Natural Language Support:");
+        System.out.println("  • Use 'today', 'tomorrow', 'next friday'");
+        System.out.println("  • Use '3pm', '1400', '2:30pm' for times");
+        System.out.println("  • Priority auto-detection from task content");
+        System.out.println();
+        System.out.println("💡 Examples:");
+        System.out.println("  • deadline Submit report /by tomorrow 5pm");
+        System.out.println("  • event Team meeting /from today 2pm /to today 3pm");
+        System.out.println("  • schedule next monday");
+        showLine();
+        System.out.println();
+    }
+    
+    /**
+     * Shows AI-powered suggestions to improve productivity.
+     * @param suggestions list of personalized suggestions
+     */
+    public void showSuggestions(List<String> suggestions) {
+        showLine();
+        System.out.println("🧠 AI Suggestions for You:");
+        System.out.println();
+        for (String suggestion : suggestions) {
+            System.out.println("  " + suggestion);
+        }
+        showLine();
+        System.out.println();
+    }
+    
     /** Closes the scanner backing this UI. */
     public void close() {
         scanner.close();

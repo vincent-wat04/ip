@@ -19,6 +19,7 @@ import vince.command.Command;
 import vince.util.Parser;
 import vince.exception.VinceException;
 import vince.task.Task;
+import vince.ai.TaskSuggestionEngine;
 import java.util.stream.Collectors;
 
 /**
@@ -206,6 +207,8 @@ public class Main extends Application {
             return handleOnDateCommand((vince.command.OnDateCommand) command);
         } else if (command instanceof vince.command.ScheduleCommand) {
             return handleScheduleCommand((vince.command.ScheduleCommand) command);
+        } else if (command instanceof vince.command.HelpCommand) {
+            return handleHelpCommand();
         }
         
         return "Unknown command type";
@@ -341,6 +344,50 @@ public class Main extends Application {
         for (String line : scheduleLines) {
             response.append(line).append("\n");
         }
+        return response.toString().trim();
+    }
+    
+    /**
+     * Handles the help command by showing AI-enhanced help and suggestions.
+     * 
+     * @return formatted help text with personalized suggestions
+     */
+    private String handleHelpCommand() {
+        StringBuilder response = new StringBuilder();
+        
+        // Add help content
+        response.append("🤖 Vince AI Assistant - Available Commands:\n\n");
+        response.append("📝 Task Management:\n");
+        response.append("  • todo <description> - Add a simple task\n");
+        response.append("  • deadline <description> /by <date> - Add a task with deadline\n");
+        response.append("  • event <description> /from <start> /to <end> - Add a scheduled event\n\n");
+        response.append("📋 Task Operations:\n");
+        response.append("  • list - Show all tasks\n");
+        response.append("  • mark <number> - Mark task as completed\n");
+        response.append("  • unmark <number> - Mark task as incomplete\n");
+        response.append("  • delete <number> - Remove a task\n\n");
+        response.append("🔍 Smart Features:\n");
+        response.append("  • find <keyword> - Search tasks by keyword\n");
+        response.append("  • schedule <date> - View timeline for a specific date\n");
+        response.append("  • on <date> - List tasks on a specific date\n\n");
+        response.append("🧠 Natural Language Support:\n");
+        response.append("  • Use 'today', 'tomorrow', 'next friday'\n");
+        response.append("  • Use '3pm', '1400', '2:30pm' for times\n");
+        response.append("  • Priority auto-detection from task content\n\n");
+        response.append("💡 Examples:\n");
+        response.append("  • deadline Submit report /by tomorrow 5pm\n");
+        response.append("  • event Team meeting /from today 2pm /to today 3pm\n");
+        response.append("  • schedule next monday\n\n");
+        
+        // Add AI suggestions
+        var suggestions = TaskSuggestionEngine.generateSuggestions(tasks.getAllTasks());
+        if (!suggestions.isEmpty()) {
+            response.append("🧠 AI Suggestions for You:\n");
+            for (String suggestion : suggestions) {
+                response.append("  ").append(suggestion).append("\n");
+            }
+        }
+        
         return response.toString().trim();
     }
 

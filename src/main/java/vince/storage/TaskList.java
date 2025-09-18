@@ -461,4 +461,12 @@ public class TaskList {
         tasks.clear();
         storage.save(tasks);
     }
+    
+    /**
+     * Returns all tasks for AI analysis.
+     * @return list of all tasks
+     */
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(tasks);
+    }
 }

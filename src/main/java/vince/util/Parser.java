@@ -10,7 +10,10 @@ import vince.command.OnDateCommand;
 import vince.command.AddCommand;
 import vince.command.FindCommand;
 import vince.command.ScheduleCommand;
+import vince.command.HelpCommand;
 import vince.exception.VinceException;
+import vince.util.InputValidator;
+import vince.util.InputValidator.ValidationResult;
 
 /**
  * Parses raw user input into executable {@link Command} instances.
@@ -26,6 +29,18 @@ public class Parser {
         if (input == null || input.trim().isEmpty()) {
             return null;
         }
+        
+        // AI-enhanced input validation
+        ValidationResult validation = InputValidator.validate(input);
+        if (!validation.isValid()) {
+            String errorMessage = validation.getMessage();
+            if (validation.hasSuggestions()) {
+                errorMessage += "\n\nSuggestions:\n" + 
+                    String.join("\n", validation.getSuggestions());
+            }
+            throw new VinceException(errorMessage);
+        }
+        
         String trimmed = input.trim();
         assert trimmed != null && !trimmed.isEmpty() : "Trimmed input should not be null or empty";
         String[] parts = trimmed.split(" ");
@@ -35,6 +50,8 @@ public class Parser {
         switch (head) {
             case "bye":
                 return new ExitCommand();
+            case "help":
+                return new HelpCommand();
             case "list":
                 return new ListCommand();
             case "mark":
