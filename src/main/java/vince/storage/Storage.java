@@ -25,8 +25,8 @@ public class Storage {
     private final Path dataFile;
 
     /**
-     * Constructs a Storage pointing at the default data file path (data/vince.txt),
-     * automatically adjusting when invoked from the text-ui-test directory.
+     * Constructs a Storage pointing at the default data file path (./data/vince.txt)
+     * in the current project directory.
      */
     public Storage() {
         this(resolveDefaultDataFile());
@@ -41,11 +41,9 @@ public class Storage {
     }
 
     private static Path resolveDefaultDataFile() {
+        // Always use the current project directory for data storage
         Path base = Paths.get(".");
-        if (Files.isDirectory(Paths.get("text-ui-test"))) {
-            base = Paths.get("..");
-        }
-        Path dataDir = base.resolve(Paths.get("data"));
+        Path dataDir = base.resolve("data");
         return dataDir.resolve("vince.txt");
     }
 

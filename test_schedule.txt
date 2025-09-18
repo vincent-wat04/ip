@@ -1,7 +1,0 @@
-todo Buy groceries
-deadline Submit report /by 15/12/2024 1700
-event Team meeting /from 15/12/2024 1000 /to 15/12/2024 1100
-event Lunch /from 15/12/2024 1200 /to 15/12/2024 1300
-deadline Review code /by 15/12/2024 1800
-schedule 15/12/2024
-bye
