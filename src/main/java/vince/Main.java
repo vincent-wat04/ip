@@ -80,7 +80,7 @@ public class Main extends Application {
 
         // Step 2. Formatting the window to look as expected with responsive design
         stage.setTitle("Vince AI Assistant");
-        stage.setResizable(true);  // Enable window resizing
+        stage.setResizable(true); // Enable window resizing
         stage.setMinHeight(400.0); // Set reasonable minimum size
         stage.setMinWidth(350.0);
         stage.setMaxHeight(1000.0); // Set maximum size to prevent excessive stretching
@@ -96,7 +96,6 @@ public class Main extends Application {
         scrollPane.setVvalue(1.0);
         scrollPane.setFitToWidth(true);
 
-        // You will need to import `javafx.scene.layout.Region` for this.
         dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
         dialogContainer.setMaxHeight(Region.USE_PREF_SIZE);
 
@@ -118,7 +117,7 @@ public class Main extends Application {
         AnchorPane.setLeftAnchor(userInput, 10.0);
         AnchorPane.setRightAnchor(userInput, 100.0); // Leave space for send button
 
-        // Step 3. Add functionality to handle user input.
+        // Add functionality to handle user input.
         sendButton.setOnMouseClicked((event) -> {
             handleUserInput();
         });
@@ -135,7 +134,7 @@ public class Main extends Application {
     }
 
     /**
-     * Iteration 1: Creates a label with the specified text and adds it to the
+     * Creates a label with the specified text and adds it to the
      * dialog container.
      * 
      * @param text String containing text to add
@@ -149,32 +148,33 @@ public class Main extends Application {
     }
 
     /**
-     * Iteration 2: Creates two dialog boxes, one echoing user input and the other
+     * Creates two dialog boxes, one echoing user input and the other
      * containing Vince's reply and then appends them to
      * the dialog container. Clears the user input after processing.
      */
     private void handleUserInput() {
         Label userText = new Label(userInput.getText());
         Label vinceText = new Label(getResponse(userInput.getText()));
-        
+
         // Create dialog boxes
         DialogBox userDialog = DialogBox.getUserDialog(userText, new ImageView(user));
         DialogBox vinceDialog = DialogBox.getVinceDialog(vinceText, new ImageView(vince));
-        
+
         // Create containers for proper alignment
         VBox userContainer = new VBox(userDialog);
         userContainer.setAlignment(Pos.CENTER_RIGHT);
-        
+
         VBox vinceContainer = new VBox(vinceDialog);
         vinceContainer.setAlignment(Pos.CENTER_LEFT);
-        
+
         dialogContainer.getChildren().addAll(userContainer, vinceContainer);
         userInput.clear();
     }
 
     /**
      * Generates a response to user input by parsing and executing the command.
-     * This method handles the GUI-specific response generation for all command types.
+     * This method handles the GUI-specific response generation for all command
+     * types.
      * 
      * @param input the raw user input string
      * @return formatted response string for display in GUI
@@ -235,7 +235,7 @@ public class Main extends Application {
         } else if (command instanceof vince.command.HelpCommand) {
             return handleHelpCommand();
         }
-        
+
         return "Unknown command type";
     }
 
@@ -259,7 +259,7 @@ public class Main extends Application {
         if (taskLines.isEmpty()) {
             return "Your task list is empty!";
         }
-        
+
         StringBuilder response = new StringBuilder("Here are the tasks in your list:\n");
         for (String line : taskLines) {
             response.append(line).append("\n");
@@ -275,8 +275,8 @@ public class Main extends Application {
      */
     private String handleAddCommand(vince.command.AddCommand addCommand) {
         Task newTask = tasks.addTask(addCommand.getInput());
-        return String.format("Got it. I've added this task:\n%s\nNow you have %d tasks in the list.", 
-                           newTask, tasks.size());
+        return String.format("Got it. I've added this task:\n%s\nNow you have %d tasks in the list.",
+                newTask, tasks.size());
     }
 
     /**
@@ -311,8 +311,8 @@ public class Main extends Application {
      */
     private String handleDeleteCommand(vince.command.DeleteCommand deleteCommand) {
         Task deletedTask = tasks.delete(deleteCommand.getIndex());
-        return String.format("Noted. I've removed this task:\n%s\nNow you have %d tasks in the list.", 
-                           deletedTask, tasks.size());
+        return String.format("Noted. I've removed this task:\n%s\nNow you have %d tasks in the list.",
+                deletedTask, tasks.size());
     }
 
     /**
@@ -326,7 +326,7 @@ public class Main extends Application {
         if (matchingLines.isEmpty()) {
             return String.format("No tasks found matching '%s'.", findCommand.getKeyword());
         }
-        
+
         StringBuilder response = new StringBuilder("Here are the matching tasks in your list:\n");
         for (String line : matchingLines) {
             response.append(line).append("\n");
@@ -343,11 +343,11 @@ public class Main extends Application {
     private String handleOnDateCommand(vince.command.OnDateCommand onDateCommand) {
         var taskLines = tasks.tasksOnDateLines(onDateCommand.getDateStr());
         String dateLabel = tasks.tasksOnDateLabel(onDateCommand.getDateStr());
-        
+
         if (taskLines.isEmpty()) {
             return String.format("No tasks found on %s.", dateLabel);
         }
-        
+
         StringBuilder response = new StringBuilder(String.format("Tasks on %s:\n", dateLabel));
         for (String line : taskLines) {
             response.append(line).append("\n");
@@ -356,7 +356,8 @@ public class Main extends Application {
     }
 
     /**
-     * Handles the schedule command by showing a timeline view of tasks on a specific date.
+     * Handles the schedule command by showing a timeline view of tasks on a
+     * specific date.
      * 
      * @param scheduleCommand the schedule command with date string
      * @return formatted schedule with timeline or no results message
@@ -364,14 +365,14 @@ public class Main extends Application {
     private String handleScheduleCommand(vince.command.ScheduleCommand scheduleCommand) {
         var scheduleLines = tasks.getScheduleForDate(scheduleCommand.getDateStr());
         String dateLabel = tasks.tasksOnDateLabel(scheduleCommand.getDateStr());
-        
+
         StringBuilder response = new StringBuilder(String.format("📅 Schedule for %s:\n\n", dateLabel));
         for (String line : scheduleLines) {
             response.append(line).append("\n");
         }
         return response.toString().trim();
     }
-    
+
     /**
      * Handles the help command by showing AI-enhanced help and suggestions.
      * 
@@ -379,7 +380,7 @@ public class Main extends Application {
      */
     private String handleHelpCommand() {
         StringBuilder response = new StringBuilder();
-        
+
         // Add help content
         response.append("🤖 Vince AI Assistant - Available Commands:\n\n");
         response.append("📝 Task Management:\n");
@@ -403,7 +404,7 @@ public class Main extends Application {
         response.append("  • deadline Submit report /by tomorrow 5pm\n");
         response.append("  • event Team meeting /from today 2pm /to today 3pm\n");
         response.append("  • schedule next monday\n\n");
-        
+
         // Add AI suggestions
         var suggestions = TaskSuggestionEngine.generateSuggestions(tasks.getAllTasks());
         if (!suggestions.isEmpty()) {
@@ -412,7 +413,7 @@ public class Main extends Application {
                 response.append("  ").append(suggestion).append("\n");
             }
         }
-        
+
         return response.toString().trim();
     }
 
