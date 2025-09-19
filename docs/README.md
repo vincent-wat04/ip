@@ -2,7 +2,7 @@
 
 Welcome to **Vince AI Assistant** - your intelligent task management companion! 🤖✨
 
-![Vince AI Assistant](https://github.com/vincent-wat04/ip/)
+![Vince AI Assistant](Ui.png)
 
 Vince is an AI-enhanced chatbot designed to help you manage your tasks efficiently with smart features like natural language understanding, automatic priority detection, and intelligent scheduling. Whether you're planning your day or organizing complex projects, Vince has got you covered!
 
