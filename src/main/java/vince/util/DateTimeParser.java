@@ -20,38 +20,99 @@ public class DateTimeParser {
     private static final Pattern TIME_PATTERN = Pattern.compile("(\\d{4})");
     
     /**
-     * Parses a date/time string into a LocalDateTime.
-     * Accepted formats include: yyyy-MM-dd, dd/MM/yyyy HHmm, dd/MM/yyyy, HHmm.
+     * Parses a date/time string into a LocalDateTime using multiple parsing strategies.
+     * Supports natural language, ISO formats, and various date/time combinations.
+     * 
      * @param dateTimeStr input string
      * @return parsed LocalDateTime
      * @throws VinceException if parsing fails or input is blank
      */
     public static LocalDateTime parseDateTime(String dateTimeStr) throws VinceException {
-        if (dateTimeStr == null || dateTimeStr.trim().isEmpty()) {
-            throw new VinceException("Date/time string cannot be empty!");
-        }
+        validateInput(dateTimeStr);
         
         String input = dateTimeStr.trim();
         assert input != null && !input.isEmpty() : "Input should not be null or empty after trimming";
         
-        // Handle natural language dates first
+        // Try different parsing strategies in order of preference
+        LocalDateTime result = tryNaturalLanguageParsing(input);
+        if (result != null) return result;
+        
+        result = tryStandardFormatParsing(input);
+        if (result != null) return result;
+        
+        // If all parsing strategies fail
+        throw new VinceException("Unable to parse date/time: " + dateTimeStr + 
+            ". Try formats like: 'tomorrow 5pm', '15/12/2024 1700', 'yyyy-mm-dd'");
+    }
+    
+    /**
+     * Validates that the input string is not null or empty.
+     * 
+     * @param dateTimeStr the input to validate
+     * @throws VinceException if input is invalid
+     */
+    private static void validateInput(String dateTimeStr) throws VinceException {
+        if (dateTimeStr == null || dateTimeStr.trim().isEmpty()) {
+            throw new VinceException("Date/time string cannot be empty!");
+        }
+    }
+    
+    /**
+     * Attempts to parse using natural language processing.
+     * 
+     * @param input the trimmed input string
+     * @return parsed LocalDateTime or null if not recognized
+     */
+    private static LocalDateTime tryNaturalLanguageParsing(String input) {
         LocalDateTime naturalDate = parseNaturalLanguageDate(input.toLowerCase());
         if (naturalDate != null) {
             assert naturalDate != null : "Parsed natural language date should not be null";
             return naturalDate;
         }
+        return null;
+    }
+    
+    /**
+     * Attempts to parse using standard date/time formats.
+     * 
+     * @param input the trimmed input string
+     * @return parsed LocalDateTime or null if not recognized
+     */
+    private static LocalDateTime tryStandardFormatParsing(String input) {
+        // Try each standard format in order
+        LocalDateTime result = tryIsoDateFormat(input);
+        if (result != null) return result;
         
-        // Try yyyy-mm-dd format first
+        result = tryDateTimeFormat(input);
+        if (result != null) return result;
+        
+        result = tryDateOnlyFormat(input);
+        if (result != null) return result;
+        
+        result = tryTimeOnlyFormat(input);
+        if (result != null) return result;
+        
+        return null;
+    }
+    
+    /**
+     * Attempts to parse ISO date format (yyyy-MM-dd).
+     */
+    private static LocalDateTime tryIsoDateFormat(String input) {
         try {
             LocalDate date = LocalDate.parse(input, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             LocalDateTime result = date.atStartOfDay();
             assert result != null : "Parsed LocalDateTime should not be null";
             return result;
         } catch (DateTimeParseException e) {
-            // Continue to other formats
+            return null;
         }
-        
-        // Try dd/mm/yyyy HHMM format
+    }
+    
+    /**
+     * Attempts to parse combined date and time format (dd/MM/yyyy HHmm).
+     */
+    private static LocalDateTime tryDateTimeFormat(String input) {
         Matcher dateTimeMatcher = DATE_TIME_PATTERN.matcher(input);
         if (dateTimeMatcher.matches()) {
             try {
@@ -66,11 +127,16 @@ public class DateTimeParser {
                 assert result != null : "Parsed LocalDateTime should not be null";
                 return result;
             } catch (DateTimeParseException e) {
-                throw new VinceException("Invalid date/time format: " + input + ". Use dd/mm/yyyy HHMM or yyyy-mm-dd");
+                throw new VinceException("Invalid date/time format: " + input + ". Use dd/mm/yyyy HHmm");
             }
         }
-        
-        // Try dd/mm/yyyy format (date only)
+        return null;
+    }
+    
+    /**
+     * Attempts to parse date-only format (dd/MM/yyyy).
+     */
+    private static LocalDateTime tryDateOnlyFormat(String input) {
         Matcher dateMatcher = DATE_PATTERN.matcher(input);
         if (dateMatcher.matches()) {
             try {
@@ -80,20 +146,23 @@ public class DateTimeParser {
                 throw new VinceException("Invalid date format: " + input + ". Use dd/mm/yyyy");
             }
         }
-        
-        // Try HHMM format (time only, assume today)
+        return null;
+    }
+    
+    /**
+     * Attempts to parse time-only format (HHmm), assumes today's date.
+     */
+    private static LocalDateTime tryTimeOnlyFormat(String input) {
         Matcher timeMatcher = TIME_PATTERN.matcher(input);
         if (timeMatcher.matches()) {
             try {
                 LocalTime time = LocalTime.parse(input, DateTimeFormatter.ofPattern("HHmm"));
                 return LocalDateTime.of(LocalDate.now(), time);
             } catch (DateTimeParseException e) {
-                throw new VinceException("Invalid time format: " + input + ". Use HHMM");
+                throw new VinceException("Invalid time format: " + input + ". Use HHmm");
             }
         }
-        
-        throw new VinceException("Unsupported date/time format: " + input + 
-            ". Supported formats: yyyy-mm-dd, dd/mm/yyyy HHMM, dd/mm/yyyy, HHMM");
+        return null;
     }
     
     /**

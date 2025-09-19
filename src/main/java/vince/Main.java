@@ -41,7 +41,18 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) {
-        // Initialize images with fallback
+        initializeImages();
+        setupUIComponents();
+        configureStage(stage);
+        setupEventHandlers();
+        showWelcomeMessage();
+    }
+
+    /**
+     * Initializes user and bot avatar images with fallback placeholders.
+     */
+    private void initializeImages() {
+        // Initialize user avatar image with fallback
         try {
             user = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
         } catch (Exception e) {
@@ -50,6 +61,7 @@ public class Main extends Application {
                     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==");
         }
 
+        // Initialize Vince avatar image with fallback
         try {
             vince = new Image(this.getClass().getResourceAsStream("/images/DaVince.png"));
         } catch (Exception e) {
@@ -57,80 +69,125 @@ public class Main extends Application {
             vince = new Image(
                     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==");
         }
+    }
 
-        // Step 1. Setting up required components
+    /**
+     * Sets up and configures all UI components including layout and styling.
+     */
+    private void setupUIComponents() {
+        // Create and configure the chat scroll area
+        setupScrollPane();
+        
+        // Create input controls
+        userInput = new TextField();
+        sendButton = new Button("Send");
+        
+        // Create main layout and add all components
+        AnchorPane mainLayout = new AnchorPane();
+        mainLayout.getChildren().addAll(scrollPane, userInput, sendButton);
+        
+        // Configure responsive sizing
+        configureResponsiveLayout(mainLayout);
+        
+        // Create scene
+        scene = new Scene(mainLayout);
+    }
 
-        // The container for the content of the chat to scroll.
+    /**
+     * Sets up the scrollable chat area with dialog container.
+     */
+    private void setupScrollPane() {
         scrollPane = new ScrollPane();
         dialogContainer = new VBox();
         dialogContainer.setSpacing(5.0); // Add spacing between dialog boxes
         dialogContainer.setPadding(new Insets(10.0)); // Add padding around content
         scrollPane.setContent(dialogContainer);
+    }
 
-        userInput = new TextField();
-        sendButton = new Button("Send");
-
-        AnchorPane mainLayout = new AnchorPane();
-        mainLayout.getChildren().addAll(scrollPane, userInput, sendButton);
-
-        scene = new Scene(mainLayout);
-
-        stage.setScene(scene);
-        stage.show();
-
-        // Step 2. Formatting the window to look as expected with responsive design
-        stage.setTitle("Vince AI Assistant");
-        stage.setResizable(true); // Enable window resizing
-        stage.setMinHeight(400.0); // Set reasonable minimum size
-        stage.setMinWidth(350.0);
-        stage.setMaxHeight(1000.0); // Set maximum size to prevent excessive stretching
-        stage.setMaxWidth(800.0);
-
-        // Use responsive sizing instead of fixed sizes
+    /**
+     * Configures responsive layout properties for all UI components.
+     * 
+     * @param mainLayout the main AnchorPane layout
+     */
+    private void configureResponsiveLayout(AnchorPane mainLayout) {
+        // Set preferred size for main layout
         mainLayout.setPrefSize(450.0, 650.0);
 
-        // Make scrollPane responsive - remove fixed size
+        // Configure scroll pane properties
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-
         scrollPane.setVvalue(1.0);
         scrollPane.setFitToWidth(true);
 
+        // Configure dialog container
         dialogContainer.setPrefHeight(Region.USE_COMPUTED_SIZE);
         dialogContainer.setMaxHeight(Region.USE_PREF_SIZE);
 
-        // Make input field responsive
+        // Configure input controls sizing
         userInput.setPrefWidth(Region.USE_COMPUTED_SIZE);
         sendButton.setPrefWidth(80.0);
 
-        // Set up responsive anchoring for scrollPane
+        // Set up responsive anchoring
+        setupAnchoring();
+    }
+
+    /**
+     * Sets up anchor constraints for responsive positioning of UI components.
+     */
+    private void setupAnchoring() {
+        // Anchor scroll pane to fill most of the window
         AnchorPane.setTopAnchor(scrollPane, 10.0);
         AnchorPane.setLeftAnchor(scrollPane, 10.0);
         AnchorPane.setRightAnchor(scrollPane, 10.0);
         AnchorPane.setBottomAnchor(scrollPane, 60.0); // Leave space for input area
 
-        // Position input controls at bottom with responsive width
+        // Position send button at bottom-right
         AnchorPane.setBottomAnchor(sendButton, 10.0);
         AnchorPane.setRightAnchor(sendButton, 10.0);
 
+        // Position input field to fill available width
         AnchorPane.setBottomAnchor(userInput, 10.0);
         AnchorPane.setLeftAnchor(userInput, 10.0);
         AnchorPane.setRightAnchor(userInput, 100.0); // Leave space for send button
+    }
 
-        // Add functionality to handle user input.
+    /**
+     * Configures the stage (window) properties and displays it.
+     * 
+     * @param stage the primary stage to configure
+     */
+    private void configureStage(Stage stage) {
+        // Set scene and show window
+        stage.setScene(scene);
+        stage.show();
+
+        // Configure window properties
+        stage.setTitle("Vince AI Assistant");
+        stage.setResizable(true); // Enable window resizing
+        
+        // Set size constraints
+        stage.setMinHeight(400.0); // Set reasonable minimum size
+        stage.setMinWidth(350.0);
+        stage.setMaxHeight(1000.0); // Set maximum size to prevent excessive stretching
+        stage.setMaxWidth(800.0);
+    }
+
+    /**
+     * Sets up event handlers for user interactions.
+     */
+    private void setupEventHandlers() {
+        // Handle send button clicks
         sendButton.setOnMouseClicked((event) -> {
             handleUserInput();
         });
 
+        // Handle Enter key in text field
         userInput.setOnAction((event) -> {
             handleUserInput();
         });
 
-        // Scroll down to the end every time dialogContainer's height changes.
+        // Auto-scroll to bottom when new messages are added
         dialogContainer.heightProperty().addListener((observable) -> scrollPane.setVvalue(1.0));
-
-        // Show welcome message
-        showWelcomeMessage();
     }
 
     /**
