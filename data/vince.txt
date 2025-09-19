@@ -1,4 +1,4 @@
 T | 0 | read book
 D | 0 | return book | 2024-12-15T18:00:00
 E | 0 | project meeting | 2024-12-20T14:00:00 | 2024-12-20T16:00:00
-D | 0 | finish quiz | 2025-09-19T19:00:00
+D | 1 | email HR | 2025-09-20T12:00:00
